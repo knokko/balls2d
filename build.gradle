@@ -1,0 +1,67 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+plugins {
+	id "java"
+	id "org.jetbrains.kotlin.jvm" version "2.0.0"
+	id "com.github.johnrengelman.shadow" version "8.1.1"
+}
+
+allprojects {
+	apply plugin: "java"
+	apply plugin: "org.jetbrains.kotlin.jvm"
+
+	repositories {
+		mavenCentral()
+		maven { url "https://jitpack.io" }
+	}
+
+	compileKotlin {
+		compilerOptions.jvmTarget = JvmTarget.JVM_1_8
+	}
+
+	compileTestKotlin {
+		compilerOptions.jvmTarget = JvmTarget.JVM_1_8
+	}
+
+	java {
+		sourceCompatibility = "8"
+		targetCompatibility = "8"
+	}
+
+	dependencies {
+		testImplementation platform("org.junit:junit-bom:5.10.3")
+		testImplementation "org.junit.jupiter:junit-jupiter:5.10.3"
+		testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+	}
+
+	test {
+		useJUnitPlatform()
+	}
+}
+
+dependencies {
+	api project(":fixed-point")
+	api project(":geometry")
+	testImplementation project(":demo")
+}
+
+project(":demo") {
+	apply plugin: "com.github.johnrengelman.shadow"
+	dependencies {
+		implementation project(":")
+		implementation "com.github.knokko.update-loop:implementation:v2.0.0"
+		implementation "com.github.knokko:sample-profiler:v1.0.0"
+	}
+	shadowJar {
+		minimize()
+		manifest {
+			attributes ("Main-Class": "balls2d.demo.DemoFrameKt")
+		}
+	}
+}
+
+project(":geometry") {
+	dependencies {
+		implementation project(":fixed-point")
+	}
+}

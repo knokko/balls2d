@@ -1,0 +1,3 @@
+rootProject.name = "balls2d"
+
+include "demo", "fixed-point", "geometry"

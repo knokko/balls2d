@@ -1,0 +1,19 @@
+name: Run unit tests & build
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: [ubuntu-latest]
+    strategy:
+      matrix:
+        jdk: [8, 21]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK ${{ matrix.jdk }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.jdk }}
+          distribution: 'temurin'
+      - run: './gradlew test'
+      - run: './gradlew shadowJar'
