@@ -105,6 +105,7 @@ class TestSpeed {
 		assertEquals(20.0, (2.seconds * (10 * Speed.METERS_PER_SECOND)).toDouble(DistanceUnit.METER), 0.01)
 		assertEquals(0.5, (Speed.METERS_PER_SECOND / 2.seconds).toDouble(), 2.5E-4)
 		assertEquals(3.5, (0.5 * Speed.METERS_PER_SECOND * (7000 * Mass.GRAM)).toDouble(), 0.1)
+		assertEquals(0.35, ((0.5 * Speed.METERS_PER_SECOND) * (0.7 * Speed.METERS_PER_SECOND)).toDouble(), 0.01)
 	}
 
 	@Test

@@ -50,8 +50,15 @@
 	momenta = [{
 		className = "Momentum",
 		floatType = "Double",
+		square = "SquareMomentum",
 		mass = "Mass",
 		speed = "Speed",
+		createNumberExtensions = true
+	}],
+	squareMomenta = [{
+		className = "SquareMomentum",
+		floatType = "Double",
+		momentum = "Momentum",
 		createNumberExtensions = true
 	}],
 	volumes = [{
@@ -87,10 +94,17 @@
 		floatType = "Float",
 		oneUnit = "Meters per second",
 		displayUnit = "Meters per second",
+		square = "SquareSpeed",
 		displacement = "Displacement",
 		acceleration = "Acceleration",
 		mass = "Mass",
 		momentum = "Momentum",
+		createNumberExtensions = true
+	}],
+	squareSpeed = [{
+		className = "SquareSpeed",
+		floatType = "Double",
+		speed = "Speed",
 		createNumberExtensions = true
 	}],
 	spins = [{

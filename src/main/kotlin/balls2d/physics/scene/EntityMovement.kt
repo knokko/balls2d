@@ -218,9 +218,8 @@ internal class EntityMovement(
 	}
 
 	private fun processTileOrEntityIntersections(processTiles: Boolean) {
-		// TODO Get rid of the .toDouble()
-		val vx = computeCurrentVelocityX().toDouble(SpeedUnit.METERS_PER_SECOND)
-		val vy = computeCurrentVelocityY().toDouble(SpeedUnit.METERS_PER_SECOND)
+		val vx = computeCurrentVelocityX()
+		val vy = computeCurrentVelocityY()
 		val speed = sqrt(vx * vx + vy * vy)
 		val directionX = vx / speed
 		val directionY = vy / speed
@@ -319,12 +318,9 @@ internal class EntityMovement(
 			val thresholdFactor = 2.0
 			var dimmer = 1.0
 
-			// TODO Get rid of the .value
-			val relativeVelocity = Speed.raw(sqrt(relativeVelocityX.value * relativeVelocityX.value + relativeVelocityY.value * relativeVelocityY.value))
-			// TODO Also obtain a square (root) for Speed and Momentum
-			val impulse = sqrt(impulseX.value * impulseX.value + impulseY.value * impulseY.value).newSec
+			val relativeVelocity = sqrt(relativeVelocityX * relativeVelocityX + relativeVelocityY * relativeVelocityY)
+			val impulse = sqrt(impulseX * impulseX + impulseY * impulseY)
 
-			//val push = massFactor * impulse / (relativeVelocity + 0.5.mps.value / massFactor)
 			val push = impulse / (relativeVelocity * intersection.otherMass)
 			if (push > thresholdFactor) dimmer = push / thresholdFactor
 

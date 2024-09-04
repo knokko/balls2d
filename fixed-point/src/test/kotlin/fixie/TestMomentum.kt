@@ -58,6 +58,7 @@ class TestMomentum {
 		assertEquals(-Momentum.NEWTON_SECOND / 2, Momentum.NEWTON_SECOND / 2 - Momentum.NEWTON_SECOND, 0.001)
 		assertEquals(0.8, ((Momentum.NEWTON_SECOND * 1.6) / (2 * Mass.KILOGRAM)).toDouble(SpeedUnit.METERS_PER_SECOND), 0.001)
 		assertEquals(1.5, (0.75 * Momentum.NEWTON_SECOND / (0.5 * Speed.METERS_PER_SECOND)).toDouble(MassUnit.KILOGRAM), 0.001)
+		assertEquals(2.4, ((Momentum.NEWTON_SECOND * 1.2) * (Momentum.NEWTON_SECOND * 2)).toDouble(), 0.001)
 	}
 
 	@Test
