@@ -45,6 +45,17 @@ private fun narrowPipesScene(playerAttachment: EntityAttachment): Pair<Scene, UU
 	return Pair(scene, spawnPlayer.id!!)
 }
 
+private fun stickyBallsScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
+	val scene = Scene()
+	val spawnPlayer = EntitySpawnRequest(x = 3.m, y = 2.m, radius = 100.mm, attachment = playerAttachment)
+	scene.spawnEntity(spawnPlayer)
+
+	addStickyBalls(scene)
+
+	scene.update(Duration.ZERO)
+	return Pair(scene, spawnPlayer.id!!)
+}
+
 private fun simpleSplitScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
 	val scene = Scene()
 

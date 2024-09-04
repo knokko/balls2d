@@ -1,6 +1,7 @@
 package balls2d.physics
 
 import balls2d.demo.addNarrowPipes
+import balls2d.demo.addStickyBalls
 import balls2d.geometry.LineSegment
 import fixie.*
 import balls2d.geometry.Position
@@ -66,15 +67,7 @@ class TestScene {
 	fun stickyBallsRegressionTest() {
 		// This test reproduced a former bug where two balls would stick together when they collide
 		val scene = Scene()
-
-		val spawnBigBall = EntitySpawnRequest(x = 0.m, y = 1.601.m, radius = 100.mm, velocityX = 4.mps)
-		val spawnSmallBall = EntitySpawnRequest(x = 1.5.m, y = 1.521.m, velocityX = 0.5.mps, radius = 20.mm)
-
-		scene.spawnEntity(spawnSmallBall)
-		scene.spawnEntity(spawnBigBall)
-		scene.addTile(TilePlaceRequest(
-				collider = LineSegment(startX = -10.m, startY = 1.5.m, lengthX = 30.m, lengthY = 0.m),
-		))
+		addStickyBalls(scene)
 
 		var collidingTime = 0.milliseconds
 
