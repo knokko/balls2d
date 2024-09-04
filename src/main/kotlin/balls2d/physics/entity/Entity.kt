@@ -6,7 +6,10 @@ import balls2d.physics.Material
 import balls2d.physics.Velocity
 import balls2d.physics.constraint.VelocityConstraint
 import fixie.Displacement
+import fixie.Mass
+import fixie.times
 import java.util.*
+import kotlin.math.PI
 
 class Entity(
 	val radius: Displacement,
@@ -24,6 +27,9 @@ class Entity(
 	internal val wipVelocity = Velocity.zero()
 	internal val clusteringLists = mutableListOf<MutableList<Entity>>()
 	internal var isAlreadyPresent = false
+
+	val mass: Mass
+		get() = PI * radius * radius * radius * material.density * 4.0 / 3.0
 
 	override fun equals(other: Any?) = other is Entity && other.id == this.id
 

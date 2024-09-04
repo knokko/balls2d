@@ -48,6 +48,7 @@ internal class EntityMovement(
 		var friction = 0f
 		var otherVelocity: Velocity? = null
 		var otherRadius = 0.m
+		var otherMass = 0.kg
 		var otherID: UUID = UUID.randomUUID()
 
 		fun validate() {
@@ -161,6 +162,7 @@ internal class EntityMovement(
 				intersection.friction = other.material.frictionFactor
 				intersection.otherVelocity = other.wipVelocity
 				intersection.otherRadius = other.radius
+				intersection.otherMass = other.mass
 				intersection.otherID = other.id
 
 				intersection.validate()
@@ -305,37 +307,36 @@ internal class EntityMovement(
 		val relativeVelocityX = oldVelocityX - otherVelocityX
 		val relativeVelocityY = oldVelocityY - otherVelocityY
 
-		val opposingImpulse = bounceConstant * (normalX * oldVelocityX + normalY * oldVelocityY)
-		val frictionImpulse = frictionConstant * (normalY * oldVelocityX - normalX * oldVelocityY)
+		val opposingVelocity = bounceConstant * (normalX * oldVelocityX + normalY * oldVelocityY)
+		val frictionVelocity = frictionConstant * (normalY * oldVelocityX - normalX * oldVelocityY)
 
-		expectedSpin += (frictionImpulse.toDouble(SpeedUnit.METERS_PER_SECOND) / entity.radius.toDouble(DistanceUnit.METER)).radps
+		expectedSpin += (frictionVelocity.toDouble(SpeedUnit.METERS_PER_SECOND) / entity.radius.toDouble(DistanceUnit.METER)).radps
 
-		var impulseX = intersectionFactor * (opposingImpulse * normalX + frictionImpulse * normalY)
-		if (opposingImpulse > 1.kmps) {
-			println("uh ooh: ${normalX * normalX + normalY * normalY}")
-		}
-		var impulseY = intersectionFactor * (opposingImpulse * normalY - frictionImpulse * normalX)
+		var impulseX = entity.mass * intersectionFactor * (opposingVelocity * normalX + frictionVelocity * normalY)
+		var impulseY = entity.mass * intersectionFactor * (opposingVelocity * normalY - frictionVelocity * normalX)
 
 		if (otherVelocity != null) {
-			val massFactor = (entity.radius / intersection.otherRadius) * (entity.radius / intersection.otherRadius)
-
 			val thresholdFactor = 2.0
 			var dimmer = 1.0
 
-			val relativeVelocity = sqrt(relativeVelocityX.value * relativeVelocityX.value + relativeVelocityY.value * relativeVelocityY.value)
-			val impulse = sqrt(impulseX.value * impulseX.value + impulseY.value * impulseY.value)
-			val push = massFactor * impulse / (relativeVelocity + 0.5.mps.value / massFactor)
+			// TODO Get rid of the .value
+			val relativeVelocity = Speed.raw(sqrt(relativeVelocityX.value * relativeVelocityX.value + relativeVelocityY.value * relativeVelocityY.value))
+			// TODO Also obtain a square (root) for Speed and Momentum
+			val impulse = sqrt(impulseX.value * impulseX.value + impulseY.value * impulseY.value).newSec
+
+			//val push = massFactor * impulse / (relativeVelocity + 0.5.mps.value / massFactor)
+			val push = impulse / (relativeVelocity * intersection.otherMass)
 			if (push > thresholdFactor) dimmer = push / thresholdFactor
 
 			impulseX /= dimmer
 			impulseY /= dimmer
 
-			otherVelocity.x += massFactor * impulseX
-			otherVelocity.y += massFactor * impulseY
+			otherVelocity.x += impulseX / intersection.otherMass
+			otherVelocity.y += impulseY / intersection.otherMass
 		}
 
-		entity.wipVelocity.x -= impulseX
-		entity.wipVelocity.y -= impulseY
+		entity.wipVelocity.x -= impulseX / entity.mass
+		entity.wipVelocity.y -= impulseY / entity.mass
 	}
 
 	fun retry() {
