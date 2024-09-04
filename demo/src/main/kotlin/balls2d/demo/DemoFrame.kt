@@ -6,9 +6,14 @@ import com.github.knokko.profiler.storage.SampleStorage
 import com.github.knokko.update.UpdateCounter
 import com.github.knokko.update.UpdateLoop
 import fixie.*
-import fixie.geometry.LineSegment
-import fixie.geometry.Position
-import fixie.physics.*
+import balls2d.geometry.LineSegment
+import balls2d.geometry.Position
+import balls2d.physics.entity.EntityProperties
+import balls2d.physics.entity.EntitySpawnRequest
+import balls2d.physics.scene.Scene
+import balls2d.physics.scene.SceneQuery
+import balls2d.physics.tile.TilePlaceRequest
+import balls2d.physics.tile.TileProperties
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Toolkit

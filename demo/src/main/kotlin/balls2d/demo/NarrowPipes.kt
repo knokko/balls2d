@@ -1,10 +1,10 @@
 package balls2d.demo
 
 import fixie.*
-import fixie.geometry.LineSegment
-import fixie.physics.Scene
-import fixie.physics.TilePlaceRequest
-import fixie.physics.TileProperties
+import balls2d.geometry.LineSegment
+import balls2d.physics.scene.Scene
+import balls2d.physics.tile.TilePlaceRequest
+import balls2d.physics.tile.TileProperties
 
 fun addNarrowPipes(scene: Scene, radius: Displacement) {
 	val d = 2 * radius
