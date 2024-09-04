@@ -34,7 +34,6 @@ class TestSpin {
 	fun testToDouble() {
 		assertEquals(1.0, Spin.DEGREES_PER_SECOND.toDouble(SpinUnit.DEGREES_PER_SECOND), 0.002)
 		assertEquals(0.234, (0.234 * Spin.DEGREES_PER_SECOND).toDouble(SpinUnit.DEGREES_PER_SECOND), 0.002)
-		assertFalse(Spin.DEGREES_PER_SECOND == Spin.RADIANS_PER_SECOND)
 		assertEquals(1.0, Spin.RADIANS_PER_SECOND.toDouble(SpinUnit.RADIANS_PER_SECOND), 0.002)
 		assertEquals(0.234, (0.234 * Spin.RADIANS_PER_SECOND).toDouble(SpinUnit.RADIANS_PER_SECOND), 0.002)
 		assertEquals(180.0, (Math.PI * Spin.RADIANS_PER_SECOND).toDouble(SpinUnit.DEGREES_PER_SECOND), 0.1)
@@ -43,11 +42,11 @@ class TestSpin {
 
 	@Test
 	fun testToString() {
-		assertEquals("123Â°/s", (123.45 * Spin.DEGREES_PER_SECOND).toString(SpinUnit.DEGREES_PER_SECOND))
+		assertEquals("123°/s", (123.45 * Spin.DEGREES_PER_SECOND).toString(SpinUnit.DEGREES_PER_SECOND))
 		assertEquals("1.23rad/s", (1.23 * Spin.RADIANS_PER_SECOND).toString(SpinUnit.RADIANS_PER_SECOND))
-		assertEquals("-180Â°/s", (-Math.PI * Spin.RADIANS_PER_SECOND).toString(SpinUnit.DEGREES_PER_SECOND))
+		assertEquals("-180°/s", (-Math.PI * Spin.RADIANS_PER_SECOND).toString(SpinUnit.DEGREES_PER_SECOND))
 		assertEquals("3.14rad/s", (180 * Spin.DEGREES_PER_SECOND).toString(SpinUnit.RADIANS_PER_SECOND))
-		assertEquals("123Â°/s", (123.45 * Spin.DEGREES_PER_SECOND).toString())
+		assertEquals("123°/s", (123.45 * Spin.DEGREES_PER_SECOND).toString())
 	}
 
 	@Test

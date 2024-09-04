@@ -1,12 +1,20 @@
 {
 	moduleName = "fixed-point",
 	packageName = "fixie",
-	numbers = [{
-		className = "FixDisplacement",
-		internalType = "Int",
-		oneValue = 1e5,
-		checkOverflow = true
-	}],
+	numbers = [
+		{
+			className = "FixDisplacement",
+			internalType = "Int",
+			oneValue = 1e5,
+			checkOverflow = true
+		},
+		{
+			className = "FixDensity",
+			internalType = "UShort",
+			oneValue = 1000,
+			checkOverflow = true
+		}
+	],
 	accelerations = [{
 		className = "Acceleration",
 		floatType = "Float",
@@ -22,11 +30,46 @@
 		allowComparisons = false,
 		spin = "Spin"
 	}],
+	densities = [{
+		className = "Density",
+		number = "FixDensity",
+		volume = "Volume",
+		mass = "Mass",
+		createNumberExtensions = true
+	}],
+	masses = [{
+		className = "Mass",
+		floatType = "Double",
+		displayUnit = "Kilogram",
+		volume = "Volume",
+		density = "Density",
+		speed = "Speed",
+		momentum = "Momentum",
+		createNumberExtensions = true
+	}],
+	momenta = [{
+		className = "Momentum",
+		floatType = "Double",
+		mass = "Mass",
+		speed = "Speed",
+		createNumberExtensions = true
+	}],
+	volumes = [{
+		className = "Volume",
+		floatType = "Double",
+		displayUnit = "Liter",
+		displacement = "Displacement",
+		area = "Area",
+		density = "Density",
+		mass = "Mass",
+		createNumberExtensions = true
+	}],
 	areas = [{
 		className = "Area",
 		floatType = "Double",
 		displayUnit = "Square meter",
 		displacement = "Displacement",
+		volume = "Volume",
 		createNumberExtensions = true
 	}]
 	displacements = [{
@@ -36,6 +79,7 @@
 		displayUnit = "Meter",
 		speed = "Speed",
 		area = "Area",
+		volume = "Volume",
 		createNumberExtensions = true
 	}],
 	speed = [{
@@ -45,6 +89,8 @@
 		displayUnit = "Meters per second",
 		displacement = "Displacement",
 		acceleration = "Acceleration",
+		mass = "Mass",
+		momentum = "Momentum",
 		createNumberExtensions = true
 	}],
 	spins = [{

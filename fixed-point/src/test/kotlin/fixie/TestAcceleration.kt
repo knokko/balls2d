@@ -70,6 +70,7 @@ class TestAcceleration {
 		assertEquals(0.3f * Acceleration.MPS2, Acceleration.MPS2 * 0.3f)
 		assertEquals(1 * Acceleration.MPS2, Acceleration.MPS2 * 1)
 		assertEquals(2L * Acceleration.MPS2, Acceleration.MPS2 * 2L)
+		assertEquals(0.8, (4.seconds * (Acceleration.MPS2 * 0.2)).toDouble(SpeedUnit.METERS_PER_SECOND), 0.01)
 	}
 
 	@Test

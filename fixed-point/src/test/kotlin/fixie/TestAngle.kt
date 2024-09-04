@@ -37,13 +37,13 @@ class TestAngle {
 
 	@Test
 	fun testToString() {
-		assertEquals("100Â°", Angle.degrees(100).toString(AngleUnit.DEGREES, 1))
+		assertEquals("100°", Angle.degrees(100).toString(AngleUnit.DEGREES, 1))
 		assertEquals("1.23rad", Angle.radians(1.23).toString(AngleUnit.RADIANS, 2))
-		assertEquals("0Â°", Angle.degrees(0).toString(AngleUnit.DEGREES, 1))
+		assertEquals("0°", Angle.degrees(0).toString(AngleUnit.DEGREES, 1))
 		assertEquals("0rad", Angle.degrees(0).toString(AngleUnit.RADIANS, 2))
-		assertEquals("0Â°", Angle.radians(0L).toString(AngleUnit.DEGREES, 1))
+		assertEquals("0°", Angle.radians(0L).toString(AngleUnit.DEGREES, 1))
 		assertEquals("0rad", Angle.radians(0).toString(AngleUnit.RADIANS, 2))
-		assertEquals("90Â°", Angle.radians(0.5 * PI).toString(AngleUnit.DEGREES, 0))
+		assertEquals("90°", Angle.radians(0.5 * PI).toString(AngleUnit.DEGREES, 0))
 	}
 
 	@Test

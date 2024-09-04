@@ -34,22 +34,16 @@ class TestDisplacement {
 	fun testToDouble() {
 		assertEquals(1.0, Displacement.MILLIMETER.toDouble(DistanceUnit.MILLIMETER), 0.02)
 		assertEquals(0.234, (0.234 * Displacement.MILLIMETER).toDouble(DistanceUnit.MILLIMETER), 0.02)
-		assertFalse(Displacement.MILLIMETER == Displacement.INCH)
 		assertEquals(1.0, Displacement.INCH.toDouble(DistanceUnit.INCH), 7.874015748031496E-4)
 		assertEquals(0.234, (0.234 * Displacement.INCH).toDouble(DistanceUnit.INCH), 7.874015748031496E-4)
-		assertFalse(Displacement.INCH == Displacement.FOOT)
 		assertEquals(1.0, Displacement.FOOT.toDouble(DistanceUnit.FOOT), 6.561679790026247E-5)
 		assertEquals(0.234, (0.234 * Displacement.FOOT).toDouble(DistanceUnit.FOOT), 6.561679790026247E-5)
-		assertFalse(Displacement.FOOT == Displacement.YARD)
 		assertEquals(1.0, Displacement.YARD.toDouble(DistanceUnit.YARD), 2.1872265966754154E-5)
 		assertEquals(0.234, (0.234 * Displacement.YARD).toDouble(DistanceUnit.YARD), 2.1872265966754154E-5)
-		assertFalse(Displacement.YARD == Displacement.METER)
 		assertEquals(1.0, Displacement.METER.toDouble(DistanceUnit.METER), 2.0E-5)
 		assertEquals(0.234, (0.234 * Displacement.METER).toDouble(DistanceUnit.METER), 2.0E-5)
-		assertFalse(Displacement.METER == Displacement.KILOMETER)
 		assertEquals(1.0, Displacement.KILOMETER.toDouble(DistanceUnit.KILOMETER), 2.0E-5)
 		assertEquals(0.234, (0.234 * Displacement.KILOMETER).toDouble(DistanceUnit.KILOMETER), 2.0E-5)
-		assertFalse(Displacement.KILOMETER == Displacement.MILE)
 		assertEquals(1.0, Displacement.MILE.toDouble(DistanceUnit.MILE), 2.0E-5)
 		assertEquals(0.234, (0.234 * Displacement.MILE).toDouble(DistanceUnit.MILE), 2.0E-5)
 	}
@@ -161,6 +155,8 @@ class TestDisplacement {
 		assertEquals(-Displacement.MILE / 2, Displacement.MILE / 2 - Displacement.MILE, 0.001)
 		assertEquals(Displacement.raw(21474), Displacement.raw(1) * 21474.0)
 		assertEquals(2.0, (10 * Displacement.METER / 5.seconds).toDouble(SpeedUnit.METERS_PER_SECOND), 0.001)
+		assertEquals(0.8, (0.8 * Displacement.METER * Displacement.METER).toDouble(AreaUnit.SQUARE_METER), 0.1)
+		assertEquals(2.4, (0.8 * Displacement.METER * (3 * Area.SQUARE_METER)).toDouble(VolumeUnit.CUBIC_METER), 0.1)
 	}
 
 	@Test

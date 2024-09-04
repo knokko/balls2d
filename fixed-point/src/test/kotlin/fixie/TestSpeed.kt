@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.assertThrows
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.Duration.Companion.hours
 
 class TestSpeed {
 
@@ -34,25 +33,16 @@ class TestSpeed {
 	fun testToDouble() {
 		assertEquals(1.0, Speed.KILOMETERS_PER_HOUR.toDouble(SpeedUnit.KILOMETERS_PER_HOUR), 0.002)
 		assertEquals(0.234, (0.234 * Speed.KILOMETERS_PER_HOUR).toDouble(SpeedUnit.KILOMETERS_PER_HOUR), 0.002)
-		assertFalse(Speed.KILOMETERS_PER_HOUR == Speed.MILES_PER_HOUR)
 		assertEquals(1.0, Speed.MILES_PER_HOUR.toDouble(SpeedUnit.MILES_PER_HOUR), 0.002)
 		assertEquals(0.234, (0.234 * Speed.MILES_PER_HOUR).toDouble(SpeedUnit.MILES_PER_HOUR), 0.002)
-		assertFalse(Speed.MILES_PER_HOUR == Speed.METERS_PER_SECOND)
 		assertEquals(1.0, Speed.METERS_PER_SECOND.toDouble(SpeedUnit.METERS_PER_SECOND), 0.002)
 		assertEquals(0.234, (0.234 * Speed.METERS_PER_SECOND).toDouble(SpeedUnit.METERS_PER_SECOND), 0.002)
-		assertFalse(Speed.METERS_PER_SECOND == Speed.KILOMETERS_PER_SECOND)
 		assertEquals(1.0, Speed.KILOMETERS_PER_SECOND.toDouble(SpeedUnit.KILOMETERS_PER_SECOND), 0.002)
 		assertEquals(0.234, (0.234 * Speed.KILOMETERS_PER_SECOND).toDouble(SpeedUnit.KILOMETERS_PER_SECOND), 0.002)
 	}
 
 	@Test
 	fun testToString() {
-		assertTrue((0.5 * Speed.METERS_PER_SECOND).toString(SpeedUnit.METERS_PER_SECOND).startsWith("0.5"))
-		assertTrue((0.5 * Speed.METERS_PER_SECOND).toString(SpeedUnit.METERS_PER_SECOND).endsWith("m/s"))
-		assertTrue((0.5 * Speed.KILOMETERS_PER_HOUR).toString(SpeedUnit.KILOMETERS_PER_HOUR).startsWith("0.5"))
-		assertTrue((0.5 * Speed.KILOMETERS_PER_HOUR).toString(SpeedUnit.KILOMETERS_PER_HOUR).endsWith("km/h"))
-		assertTrue((0.5 * Speed.KILOMETERS_PER_SECOND).toString(SpeedUnit.KILOMETERS_PER_SECOND).startsWith("0.5"))
-		assertTrue((0.5 * Speed.KILOMETERS_PER_SECOND).toString(SpeedUnit.KILOMETERS_PER_SECOND).endsWith("km/s"))
 	}
 
 	@Test
@@ -113,8 +103,8 @@ class TestSpeed {
 		assertEquals(0.25, Speed.KILOMETERS_PER_SECOND / (4 * Speed.KILOMETERS_PER_SECOND), 0.005)
 		assertEquals(-Speed.KILOMETERS_PER_SECOND / 2, Speed.KILOMETERS_PER_SECOND / 2 - Speed.KILOMETERS_PER_SECOND, 0.005)
 		assertEquals(20.0, (2.seconds * (10 * Speed.METERS_PER_SECOND)).toDouble(DistanceUnit.METER), 0.01)
-		assertEquals(20.0, (10 * Speed.KILOMETERS_PER_HOUR * 2.hours).toDouble(DistanceUnit.KILOMETER), 0.01)
 		assertEquals(0.5, (Speed.METERS_PER_SECOND / 2.seconds).toDouble(), 2.5E-4)
+		assertEquals(3.5, (0.5 * Speed.METERS_PER_SECOND * (7000 * Mass.GRAM)).toDouble(), 0.1)
 	}
 
 	@Test

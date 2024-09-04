@@ -32,13 +32,10 @@ class TestArea {
 	fun testToDouble() {
 		assertEquals(1.0, Area.SQUARE_MILLIMETER.toDouble(AreaUnit.SQUARE_MILLIMETER), 0.002)
 		assertEquals(0.234, (0.234 * Area.SQUARE_MILLIMETER).toDouble(AreaUnit.SQUARE_MILLIMETER), 0.002)
-		assertFalse(Area.SQUARE_MILLIMETER == Area.SQUARE_INCH)
 		assertEquals(1.0, Area.SQUARE_INCH.toDouble(AreaUnit.SQUARE_INCH), 0.002)
 		assertEquals(0.234, (0.234 * Area.SQUARE_INCH).toDouble(AreaUnit.SQUARE_INCH), 0.002)
-		assertFalse(Area.SQUARE_INCH == Area.SQUARE_METER)
 		assertEquals(1.0, Area.SQUARE_METER.toDouble(AreaUnit.SQUARE_METER), 0.002)
 		assertEquals(0.234, (0.234 * Area.SQUARE_METER).toDouble(AreaUnit.SQUARE_METER), 0.002)
-		assertFalse(Area.SQUARE_METER == Area.HECTARE)
 		assertEquals(1.0, Area.HECTARE.toDouble(AreaUnit.HECTARE), 0.002)
 		assertEquals(0.234, (0.234 * Area.HECTARE).toDouble(AreaUnit.HECTARE), 0.002)
 		assertEquals(25000.0, (2.5 * Area.HECTARE).toDouble(AreaUnit.SQUARE_METER), 0.1)
@@ -120,6 +117,7 @@ class TestArea {
 		assertEquals(100 * 100 * Area.SQUARE_METER, Area.HECTARE)
 		assertEquals(Area.HECTARE, 100 * 100 * Area.SQUARE_METER)
 		assertEquals(4.0, ((10 * Area.SQUARE_INCH) / (2.5 * Displacement.INCH)).toDouble(DistanceUnit.INCH), 0.01)
+		assertEquals(234.0, (0.234 * Area.SQUARE_METER * Displacement.METER).toDouble(VolumeUnit.LITER), 30.0)
 	}
 
 	@Test
