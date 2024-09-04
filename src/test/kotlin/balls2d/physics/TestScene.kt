@@ -4,12 +4,11 @@ import balls2d.demo.addNarrowPipes
 import balls2d.geometry.LineSegment
 import fixie.*
 import balls2d.geometry.Position
-import balls2d.physics.entity.EntityProperties
+import balls2d.physics.entity.EntityAttachment
 import balls2d.physics.entity.EntitySpawnRequest
 import balls2d.physics.scene.Scene
 import balls2d.physics.scene.SceneQuery
 import balls2d.physics.tile.TilePlaceRequest
-import balls2d.physics.tile.TileProperties
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -32,8 +31,8 @@ class TestScene {
 
 		val scene = Scene()
 		val radius = 100.mm
-		val leftRequest = EntitySpawnRequest(x = 1.m, y = 5.m, properties = EntityProperties(radius = radius))
-		val rightRequest = EntitySpawnRequest(x = 3.3.m, y = 5.m, properties = EntityProperties(radius = radius))
+		val leftRequest = EntitySpawnRequest(x = 1.m, y = 5.m, radius = radius)
+		val rightRequest = EntitySpawnRequest(x = 3.3.m, y = 5.m, radius = radius)
 
 		scene.spawnEntity(leftRequest)
 		scene.spawnEntity(rightRequest)
@@ -68,14 +67,13 @@ class TestScene {
 		// This test reproduced a former bug where two balls would stick together when they collide
 		val scene = Scene()
 
-		val spawnBigBall = EntitySpawnRequest(x = 0.m, y = 1.601.m, properties = EntityProperties(radius = 100.mm), velocityX = 4.mps)
-		val spawnSmallBall = EntitySpawnRequest(x = 1.5.m, y = 1.521.m, velocityX = 0.5.mps, properties = EntityProperties(radius = 20.mm))
+		val spawnBigBall = EntitySpawnRequest(x = 0.m, y = 1.601.m, radius = 100.mm, velocityX = 4.mps)
+		val spawnSmallBall = EntitySpawnRequest(x = 1.5.m, y = 1.521.m, velocityX = 0.5.mps, radius = 20.mm)
 
 		scene.spawnEntity(spawnSmallBall)
 		scene.spawnEntity(spawnBigBall)
 		scene.addTile(TilePlaceRequest(
 				collider = LineSegment(startX = -10.m, startY = 1.5.m, lengthX = 30.m, lengthY = 0.m),
-				properties = TileProperties()
 		))
 
 		var collidingTime = 0.milliseconds
@@ -108,12 +106,11 @@ class TestScene {
 		// than it should. See sketches/scene/extreme-bounce.png
 		val scene = Scene()
 
-		val spawnPlayer = EntitySpawnRequest(x = 0.m, y = 1.101.m, velocityX = velocityX, properties = EntityProperties(radius = 100.mm))
+		val spawnPlayer = EntitySpawnRequest(x = 0.m, y = 1.101.m, velocityX = velocityX, radius = 100.mm)
 		scene.spawnEntity(spawnPlayer)
-		scene.spawnEntity(EntitySpawnRequest(x = 1.7.m, y = 3.001.m, properties = EntityProperties(radius = 2.m)))
+		scene.spawnEntity(EntitySpawnRequest(x = 1.7.m, y = 3.001.m, radius = 2.m))
 		scene.addTile(TilePlaceRequest(
-				collider = LineSegment(startX = -100.mm, startY = 1.m, lengthX = 3.m, lengthY = 0.m),
-				properties = TileProperties()
+				collider = LineSegment(startX = -100.mm, startY = 1.m, lengthX = 3.m, lengthY = 0.m)
 		))
 
 		scene.update(10.seconds)
@@ -134,7 +131,7 @@ class TestScene {
 		val scene = Scene()
 
 		var passedTime = 0.seconds
-		val entityProperties = EntityProperties(radius = 100.mm) { _, velocity ->
+		val entityAttachment = EntityAttachment { _, velocity ->
 			passedTime += Scene.STEP_DURATION
 
 			// After 0.5 seconds, the ball will accelerate to the right with 5m/s^2, which should cause it to leave the
@@ -144,14 +141,14 @@ class TestScene {
 			}
 		}
 
-		scene.spawnEntity(EntitySpawnRequest(x = 1.61.m, y = 2.63.m, properties = entityProperties))
+		scene.spawnEntity(EntitySpawnRequest(x = 1.61.m, y = 2.63.m, radius = 100.mm, attachment = entityAttachment))
 
 		val tiles = listOf(
 				LineSegment(startX = 1.5.m, startY = 2.5.m, lengthX = 0.3.m, lengthY = 70.mm),
 				LineSegment(startX = 1.5.m, startY = 2.5.m, lengthX = -2.m, lengthY = -0.5.m),
 				LineSegment(startX = 1.5.m, startY = 2.59.m, lengthX = -2.m, lengthY = -0.5.m)
 		)
-		for (tile in tiles) scene.addTile(TilePlaceRequest(collider = tile, properties = TileProperties()))
+		for (tile in tiles) scene.addTile(TilePlaceRequest(collider = tile))
 
 		scene.update(5.seconds)
 
@@ -172,21 +169,15 @@ class TestScene {
 
 		scene.addTile(TilePlaceRequest(LineSegment(
 				startX = -length, startY = 0.m, lengthX = length, lengthY = -length
-		), TileProperties()))
+		)))
 		scene.addTile(TilePlaceRequest(LineSegment(
 				startX = length, startY = 0.m, lengthX = -length, lengthY = -length
-		), TileProperties()))
+		)))
 
 		for (counter in -5..5) {
-			scene.spawnEntity(EntitySpawnRequest(
-					x = counter.m, y = 0.m, properties = EntityProperties(radius = 0.2.m)
-			))
-			scene.spawnEntity(EntitySpawnRequest(
-					x = counter.m, y = 0.4.m, properties = EntityProperties(radius = 0.1.m)
-			))
-			scene.spawnEntity(EntitySpawnRequest(
-					x = counter.m, y = 0.9.m, properties = EntityProperties(radius = 0.3.m)
-			))
+			scene.spawnEntity(EntitySpawnRequest(x = counter.m, y = 0.m, radius = 200.mm))
+			scene.spawnEntity(EntitySpawnRequest(x = counter.m, y = 0.4.m, radius = 100.mm))
+			scene.spawnEntity(EntitySpawnRequest(x = counter.m, y = 0.9.m, radius = 300.mm))
 		}
 
 		// The scene should be stabilized after 20 seconds
@@ -224,7 +215,7 @@ class TestScene {
 		// See sketches/scene/stuck.png
 		val scene = Scene()
 
-		val spawnPlayer = EntitySpawnRequest(x = -8.6123.m, y = -19.72078.m, properties = EntityProperties(radius = 100.mm))
+		val spawnPlayer = EntitySpawnRequest(x = -8.6123.m, y = -19.72078.m, radius = 100.mm)
 		scene.spawnEntity(spawnPlayer)
 		scene.update(Duration.ZERO)
 
@@ -234,7 +225,7 @@ class TestScene {
 		)
 
 		for (line in lines) {
-			scene.addTile(TilePlaceRequest(line, TileProperties()))
+			scene.addTile(TilePlaceRequest(line))
 		}
 
 		scene.update(10.seconds)
@@ -249,9 +240,7 @@ class TestScene {
 	fun testGravityAcceleration() {
 		val scene = Scene()
 
-		scene.spawnEntity(EntitySpawnRequest(
-				10.m, 0.m, EntityProperties(radius = 1.m)
-		))
+		scene.spawnEntity(EntitySpawnRequest(10.m, 0.m, radius = 1.m))
 
 		scene.update(1.seconds)
 

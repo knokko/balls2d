@@ -9,7 +9,6 @@ import balls2d.physics.constraint.MaxAccelerationConstraint
 import balls2d.physics.constraint.NotMovingConstraint
 import balls2d.physics.entity.Entity
 import balls2d.physics.entity.EntityClustering
-import balls2d.physics.entity.EntityProperties
 import balls2d.physics.entity.EntitySpawnRequest
 import balls2d.physics.tile.Tile
 import balls2d.physics.tile.TilePlaceRequest
@@ -58,20 +57,20 @@ class Scene {
 	private val spawnIntersection = Position.origin()
 	private val queryTiles = GrowingBuffer.withImmutableElements(50, DUMMY_TILE)
 
-	private fun canSpawn(x: Displacement, y: Displacement, properties: EntityProperties): Boolean {
-		val safeRadius = 2 * properties.radius
+	private fun canSpawn(x: Displacement, y: Displacement, radius: Displacement): Boolean {
+		val safeRadius = 2 * radius
 		tileTree.query(x - safeRadius, y - safeRadius, x + safeRadius, y + safeRadius, queryTiles)
 		for (index in 0 until queryTiles.size) {
 			if (Geometry.distanceBetweenPointAndLineSegment(
 							x, y, queryTiles[index].collider, spawnIntersection
-					) <= properties.radius) return false
+					) <= radius) return false
 		}
 		queryTiles.clear()
 
 		for (entity in entities) {
 			val dx = x - entity.position.x
 			val dy = y - entity.position.y
-			val combinedRadius = properties.radius + entity.properties.radius
+			val combinedRadius = radius + entity.radius
 			if (dx * dx + dy * dy <= combinedRadius * combinedRadius) return false
 		}
 
@@ -82,12 +81,14 @@ class Scene {
 		do {
 			val request = entitiesToSpawn.poll()
 			if (request != null) {
-				if (canSpawn(request.x, request.y, request.properties)) {
+				if (canSpawn(request.x, request.y, request.radius)) {
 					val entity = Entity(
-						properties = request.properties,
+						radius = request.radius,
+						material = request.material,
 						position = Position(request.x, request.y),
 						velocity = Velocity(request.velocityX, request.velocityY),
-						angle = request.angle
+						angle = request.angle,
+						attachment = request.attachment
 					)
 					entity.constraints.add(MaxAccelerationConstraint(
 							400.milliseconds,
@@ -108,7 +109,7 @@ class Scene {
 		for (entity in entities) {
 			if (Geometry.distanceBetweenPointAndLineSegment(
 							entity.position.x, entity.position.y, collider, tileIntersection
-					) <= entity.properties.radius) return false
+					) <= entity.radius) return false
 		}
 
 		return true
@@ -121,7 +122,7 @@ class Scene {
 				if (canPlace(request.collider)) {
 					val tile = Tile(
 							collider = request.collider,
-							properties = request.properties
+							material = request.material
 					)
 					tileTree.insert(tile)
 					tiles.add(tile)
@@ -188,7 +189,7 @@ class Scene {
 
 		for (entity in entities) {
 			updateEntity(entity)
-			entity.properties.updateFunction?.invoke(entity.wipPosition, entity.wipVelocity)
+			entity.attachment.updateFunction?.invoke(entity.wipPosition, entity.wipVelocity)
 		}
 
 		entityClustering.reset()
@@ -222,12 +223,13 @@ class Scene {
 			query.entities.clear()
 			for (entity in entities) {
 				val p = entity.position
-				val r = entity.properties.radius
+				val r = entity.radius
 				if (p.x + r >= minX && p.y + r >= minY && p.x - r <= maxX && p.y - r <= maxY) {
 					val qe = query.entities.add()
 
 					qe.id = entity.id
-					qe.properties = entity.properties
+					qe.radius = entity.radius
+					qe.material = entity.material
 					qe.position.x = p.x
 					qe.position.y = p.y
 					qe.velocity.x = entity.velocity.x

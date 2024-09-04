@@ -4,10 +4,8 @@ import fixie.*
 import balls2d.geometry.LineSegment
 import balls2d.geometry.Position
 import balls2d.physics.entity.Entity
-import balls2d.physics.entity.EntityProperties
 import balls2d.physics.scene.createMargin
 import balls2d.physics.tile.Tile
-import balls2d.physics.tile.TileProperties
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
@@ -24,7 +22,7 @@ class TestMargin {
 
 	private fun dummyEntity(radius: Displacement, x: Displacement, y: Displacement): Entity {
 		val entity = Entity(
-			properties = EntityProperties(radius = radius),
+			radius = radius,
 			position = Position(x, y),
 			velocity = Velocity.zero(),
 			angle = 0.degrees
@@ -35,7 +33,7 @@ class TestMargin {
 	}
 
 	private fun dummyTile(startX: Displacement, startY: Displacement, lengthX: Displacement, lengthY: Displacement) = Tile(
-			collider = LineSegment(startX, startY, lengthX, lengthY), properties = TileProperties()
+			collider = LineSegment(startX, startY, lengthX, lengthY)
 	)
 
 	@Test

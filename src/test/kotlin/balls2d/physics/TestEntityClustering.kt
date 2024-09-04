@@ -3,7 +3,6 @@ package balls2d.physics
 import balls2d.geometry.Position
 import balls2d.physics.entity.Entity
 import balls2d.physics.entity.EntityClustering
-import balls2d.physics.entity.EntityProperties
 import fixie.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -11,9 +10,9 @@ import java.util.*
 
 class TestEntityClustering {
 
-	private fun entity(props: EntityProperties, x: Displacement, y: Displacement): Entity {
+	private fun entity(r: Displacement, x: Displacement, y: Displacement): Entity {
 		val entity = Entity(
-			properties = props,
+			radius = r,
 			position = Position.origin(),
 			velocity = Velocity.zero(),
 			angle = 0.degrees
@@ -26,14 +25,14 @@ class TestEntityClustering {
 	@Test
 	fun testBasic() {
 		val clustering = EntityClustering()
-		val props = EntityProperties(radius = 1.m)
-		val pos1 = entity(props, 100.m, 1.km)
-		val pos2 = entity(props, 101.m, 1.km)
-		val neg1 = entity(props, -100.m, -1.km)
-		val neg2 = entity(props, -100.m, -1.km)
+		val radius = 1.m
+		val pos1 = entity(radius, 100.m, 1.km)
+		val pos2 = entity(radius, 101.m, 1.km)
+		val neg1 = entity(radius, -100.m, -1.km)
+		val neg2 = entity(radius, -100.m, -1.km)
 
-		val lonePos = entity(props, 300.m, 1.km)
-		val loneNeg = entity(props, -300.m, -1.km)
+		val lonePos = entity(radius, 300.m, 1.km)
+		val loneNeg = entity(radius, -300.m, -1.km)
 
 		clustering.insert(pos1, 20.m)
 		clustering.insert(pos1, 20.m)
@@ -65,9 +64,8 @@ class TestEntityClustering {
 	@Test
 	fun testInsertMultipleEntitiesAtSamePosition() {
 		val clustering = EntityClustering()
-		val props = EntityProperties(radius = 1.mm)
-		val a = entity(props, 12.m, 123.m)
-		val b = entity(props, 12.m, 123.m)
+		val a = entity(1.m, 12.m, 123.m)
+		val b = entity(1.m, 12.m, 123.m)
 
 		clustering.insert(a, 2.mm)
 		clustering.insert(b, 2.mm)
@@ -80,12 +78,11 @@ class TestEntityClustering {
 
 	@Test
 	fun testRandom() {
-		val props = EntityProperties(radius = 1.m)
 		val clustering = EntityClustering()
 
 		val rng = Random(123)
 		val entities = Array(2000) {
-			entity(props, (-20_000 + rng.nextInt(40_000)).mm, (-20_000 + rng.nextInt(40_000)).mm)
+			entity(1.m, (-20_000 + rng.nextInt(40_000)).mm, (-20_000 + rng.nextInt(40_000)).mm)
 		}
 
 		fun check(entity: Entity) {
@@ -98,7 +95,7 @@ class TestEntityClustering {
 				val dx = entity.wipPosition.x - candidate.wipPosition.x
 				val dy = entity.wipPosition.y - candidate.wipPosition.y
 				val centerDistance = sqrt(dx * dx + dy * dy)
-				val safeRadius = 2 * (entity.properties.radius + candidate.properties.radius)
+				val safeRadius = 2 * (entity.radius + candidate.radius)
 				if (centerDistance <= safeRadius) assertTrue(actual.contains(candidate))
 				if (centerDistance > 10 * safeRadius) assertFalse(actual.contains(candidate))
 			}
@@ -108,7 +105,7 @@ class TestEntityClustering {
 			clustering.reset()
 
 			for (entity in entities) {
-				clustering.insert(entity, 2 * entity.properties.radius)
+				clustering.insert(entity, 2 * entity.radius)
 			}
 
 			for (entity in entities) check(entity)

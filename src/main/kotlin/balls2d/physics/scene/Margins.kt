@@ -15,7 +15,7 @@ fun createMargin(
 	val largestMargin = 3 * margin
 	val veryCloseEntities = otherEntities.filter {
 		val currentDistance = position.distance(it.wipPosition.x, it.wipPosition.y)
-		val currentMargin = currentDistance - radius - it.properties.radius
+		val currentMargin = currentDistance - radius - it.radius
 		currentMargin < largestMargin
 	}
 
@@ -37,7 +37,7 @@ fun createMargin(
 			val dx = other.wipPosition.x - newX
 			val dy = other.wipPosition.y - newY
 			val currentDistance = sqrt(dx * dx + dy * dy)
-			val currentMargin = currentDistance - radius - other.properties.radius
+			val currentMargin = currentDistance - radius - other.radius
 			if (desiredMargin > currentMargin) {
 				val pushDistance = desiredMargin - currentMargin
 				newX -= dx / currentDistance * pushDistance
@@ -61,7 +61,7 @@ fun createMargin(
 		var failed = position.distance(newX, newY) > largeMargin
 		for (other in veryCloseEntities) {
 			val currentDistance = other.wipPosition.distance(newX, newY)
-			val currentMargin = currentDistance - radius - other.properties.radius
+			val currentMargin = currentDistance - radius - other.radius
 			if (desiredMargin * 0.6 > currentMargin) {
 				failed = true
 				break

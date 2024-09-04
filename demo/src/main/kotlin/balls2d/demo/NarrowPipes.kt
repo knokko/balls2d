@@ -4,7 +4,6 @@ import fixie.*
 import balls2d.geometry.LineSegment
 import balls2d.physics.scene.Scene
 import balls2d.physics.tile.TilePlaceRequest
-import balls2d.physics.tile.TileProperties
 
 fun addNarrowPipes(scene: Scene, radius: Displacement) {
 	val d = 2 * radius
@@ -64,5 +63,5 @@ fun addNarrowPipes(scene: Scene, radius: Displacement) {
 			rightToLeftPipe(-10.m, 0.01.mm) + leftToRightPipe(-11.m, 0.m) +
 			rightToLeftSlope(-10.m) + leftToRightSlope(-11.m)
 
-	for (tile in tiles) scene.addTile(TilePlaceRequest(collider = tile, properties = TileProperties()))
+	for (tile in tiles) scene.addTile(TilePlaceRequest(collider = tile))
 }

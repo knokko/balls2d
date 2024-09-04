@@ -2,15 +2,19 @@ package balls2d.physics.entity
 
 import fixie.Angle
 import balls2d.geometry.Position
+import balls2d.physics.Material
 import balls2d.physics.Velocity
 import balls2d.physics.constraint.VelocityConstraint
+import fixie.Displacement
 import java.util.*
 
 class Entity(
-	val properties: EntityProperties,
+	val radius: Displacement,
+	val material: Material = Material.IRON,
 	val position: Position,
 	val velocity: Velocity,
-	var angle: Angle
+	var angle: Angle,
+	val attachment: EntityAttachment = EntityAttachment()
 ) {
 	val id: UUID = UUID.randomUUID()
 

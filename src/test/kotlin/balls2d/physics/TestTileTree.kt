@@ -4,7 +4,6 @@ import fixie.*
 import balls2d.geometry.LineSegment
 import balls2d.physics.scene.DUMMY_TILE
 import balls2d.physics.tile.Tile
-import balls2d.physics.tile.TileProperties
 import balls2d.physics.tile.TileTree
 import balls2d.physics.util.GrowingBuffer
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -13,14 +12,12 @@ import kotlin.random.Random
 
 class TestTileTree {
 
-	private val material = TileProperties()
-
 	@Test
 	fun testBigInsertionsDoNotCrash() {
 		val tree = TileTree(minX = -1.m, minY = -1.m, maxX = 1.m, maxY = 1.m)
-		tree.insert(Tile(LineSegment(startX = -2.m, startY = -2.m, lengthX = 5.m, lengthY = 5.m), material))
-		tree.insert(Tile(LineSegment(startX = 0.m, startY = -2.m, lengthX = 0.m, lengthY = 5.m), material))
-		tree.insert(Tile(LineSegment(startX = -2.m, startY = 0.m, lengthX = 5.m, lengthY = 0.m), material))
+		tree.insert(Tile(LineSegment(startX = -2.m, startY = -2.m, lengthX = 5.m, lengthY = 5.m)))
+		tree.insert(Tile(LineSegment(startX = 0.m, startY = -2.m, lengthX = 0.m, lengthY = 5.m)))
+		tree.insert(Tile(LineSegment(startX = -2.m, startY = 0.m, lengthX = 5.m, lengthY = 0.m)))
 	}
 
 	@Test
@@ -37,7 +34,7 @@ class TestTileTree {
 					startY = next(),
 					lengthX = next(),
 					lengthY = next()
-			), material))
+			)))
 		}
 		val took = System.nanoTime() - startTime
 		if (took > 5_000_000_000) {
@@ -50,9 +47,9 @@ class TestTileTree {
 		// This unit test only checks that inserting tiles won't crash or hang
 		val tree = TileTree(minX = -10.km, minY = -10.km, maxX = 10.km, maxY = 10.km)
 		for (counter in 0 until 51) {
-			tree.insert(Tile(LineSegment(counter.m, counter.m, counter.m, counter.m), material))
+			tree.insert(Tile(LineSegment(counter.m, counter.m, counter.m, counter.m)))
 		}
-		tree.insert(Tile(LineSegment(-97.697.m, 33.817.m, 0.331.m, 0.169.m), material))
+		tree.insert(Tile(LineSegment(-97.697.m, 33.817.m, 0.331.m, 0.169.m)))
 	}
 
 	@Test
@@ -63,10 +60,7 @@ class TestTileTree {
 		fun next() = (rng.nextInt(-100, 100) * rng.nextInt(-100, 100) * rng.nextInt(-100, 100)).mm
 
 		val tiles = Array(1000) {
-			Tile(LineSegment(
-					startX = next(), startY = next(),
-					lengthX = next(), lengthY = next()
-			), material)
+			Tile(LineSegment(startX = next(), startY = next(), lengthX = next(), lengthY = next()))
 		}
 
 		fun check(tile: Tile) {

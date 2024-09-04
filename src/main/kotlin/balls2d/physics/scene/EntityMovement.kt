@@ -82,7 +82,7 @@ internal class EntityMovement(
 		val vy = computeCurrentVelocityY(entity.velocity.y) * Scene.STEP_DURATION
 		val marginDistance = 1.mm
 		val marginFactor = 1.1
-		return marginFactor * (abs(vx) + abs(vy) + marginDistance + entity.properties.radius)
+		return marginFactor * (abs(vx) + abs(vy) + marginDistance + entity.radius)
 	}
 
 	fun determineInterestingTilesAndEntities() {
@@ -118,7 +118,7 @@ internal class EntityMovement(
 	fun determineTileIntersections() {
 		for (tile in interestingTiles) {
 			if (Geometry.sweepCircleToLineSegment(
-							entity.wipPosition.x, entity.wipPosition.y, deltaX, deltaY, entity.properties.radius,
+							entity.wipPosition.x, entity.wipPosition.y, deltaX, deltaY, entity.radius,
 							tile.collider, entityIntersection, tileIntersection
 					)) {
 				val dx = entityIntersection.x - entity.wipPosition.x
@@ -129,10 +129,10 @@ internal class EntityMovement(
 				intersection.myY = entityIntersection.y
 				intersection.otherX = tileIntersection.x
 				intersection.otherY = tileIntersection.y
-				intersection.radius = entity.properties.radius
+				intersection.radius = entity.radius
 				intersection.delta = sqrt(dx * dx + dy * dy)
-				intersection.bounce = tile.properties.bounceFactor
-				intersection.friction = tile.properties.frictionFactor
+				intersection.bounce = tile.material.bounceFactor
+				intersection.friction = tile.material.frictionFactor
 				intersection.otherVelocity = null
 				intersection.otherID = tile.id
 
@@ -144,8 +144,8 @@ internal class EntityMovement(
 	fun determineEntityIntersections() {
 		for (other in interestingEntities) {
 			if (Geometry.sweepCircleToCircle(
-							entity.wipPosition.x, entity.wipPosition.y, entity.properties.radius, deltaX, deltaY,
-							other.wipPosition.x, other.wipPosition.y, other.properties.radius, entityIntersection
+							entity.wipPosition.x, entity.wipPosition.y, entity.radius, deltaX, deltaY,
+							other.wipPosition.x, other.wipPosition.y, other.radius, entityIntersection
 					)) {
 				val dx = entityIntersection.x - entity.wipPosition.x
 				val dy = entityIntersection.y - entity.wipPosition.y
@@ -155,12 +155,12 @@ internal class EntityMovement(
 				intersection.myY = entityIntersection.y
 				intersection.otherX = other.wipPosition.x
 				intersection.otherY = other.wipPosition.y
-				intersection.radius = entity.properties.radius + other.properties.radius
+				intersection.radius = entity.radius + other.radius
 				intersection.delta = sqrt(dx * dx + dy * dy)
-				intersection.bounce = other.properties.bounceFactor
-				intersection.friction = other.properties.frictionFactor
+				intersection.bounce = other.material.bounceFactor
+				intersection.friction = other.material.frictionFactor
 				intersection.otherVelocity = other.wipVelocity
-				intersection.otherRadius = other.properties.radius
+				intersection.otherRadius = other.radius
 				intersection.otherID = other.id
 
 				intersection.validate()
@@ -180,7 +180,7 @@ internal class EntityMovement(
 			deltaY = firstIntersection.myY - entity.wipPosition.y
 		}
 
-		val safeDistance = determineSafeRadius(entity) - entity.properties.radius - 1.mm
+		val safeDistance = determineSafeRadius(entity) - entity.radius - 1.mm
 		while (true) {
 
 			val dx = entity.wipPosition.x + deltaX - entity.position.x
@@ -198,7 +198,7 @@ internal class EntityMovement(
 		for (other in interestingEntities) {
 			val dx = entity.wipPosition.x + deltaX - other.wipPosition.x
 			val dy = entity.wipPosition.y + deltaY - other.wipPosition.y
-			if (sqrt(dx * dx + dy * dy) <= entity.properties.radius + other.properties.radius) {
+			if (sqrt(dx * dx + dy * dy) <= entity.radius + other.radius) {
 				return
 			}
 		}
@@ -206,7 +206,7 @@ internal class EntityMovement(
 		for (tile in interestingTiles) {
 			if (Geometry.distanceBetweenPointAndLineSegment(
 							entity.wipPosition.x + deltaX, entity.wipPosition.y + deltaY, tile.collider, tileIntersection
-					) <= entity.properties.radius) {
+					) <= entity.radius) {
 				return
 			}
 		}
@@ -291,8 +291,8 @@ internal class EntityMovement(
 				normalX, normalY, directionX, directionY
 		) / totalIntersectionFactor
 
-		val bounceConstant = entity.properties.bounceFactor + intersection.bounce + 1
-		val frictionConstant = 0.01 * entity.properties.frictionFactor * intersection.friction
+		val bounceConstant = entity.material.bounceFactor + intersection.bounce + 1
+		val frictionConstant = 0.01 * entity.material.frictionFactor * intersection.friction
 
 		var otherVelocityX = 0.mps
 		var otherVelocityY = 0.mps
@@ -308,7 +308,7 @@ internal class EntityMovement(
 		val opposingImpulse = bounceConstant * (normalX * oldVelocityX + normalY * oldVelocityY)
 		val frictionImpulse = frictionConstant * (normalY * oldVelocityX - normalX * oldVelocityY)
 
-		expectedSpin += (frictionImpulse.toDouble(SpeedUnit.METERS_PER_SECOND) / entity.properties.radius.toDouble(DistanceUnit.METER)).radps
+		expectedSpin += (frictionImpulse.toDouble(SpeedUnit.METERS_PER_SECOND) / entity.radius.toDouble(DistanceUnit.METER)).radps
 
 		var impulseX = intersectionFactor * (opposingImpulse * normalX + frictionImpulse * normalY)
 		if (opposingImpulse > 1.kmps) {
@@ -317,7 +317,7 @@ internal class EntityMovement(
 		var impulseY = intersectionFactor * (opposingImpulse * normalY - frictionImpulse * normalX)
 
 		if (otherVelocity != null) {
-			val massFactor = (entity.properties.radius / intersection.otherRadius) * (entity.properties.radius / intersection.otherRadius)
+			val massFactor = (entity.radius / intersection.otherRadius) * (entity.radius / intersection.otherRadius)
 
 			val thresholdFactor = 2.0
 			var dimmer = 1.0
@@ -354,7 +354,7 @@ internal class EntityMovement(
 		entityIntersection.x = entity.wipPosition.x
 		entityIntersection.y = entity.wipPosition.y
 
-		if (createMargin(entityIntersection, entity.properties.radius, interestingEntities, interestingTiles, 0.2.mm)) {
+		if (createMargin(entityIntersection, entity.radius, interestingEntities, interestingTiles, 0.2.mm)) {
 			val oldTargetX = entity.wipPosition.x + deltaX
 			val oldTargetY = entity.wipPosition.y + deltaY
 			deltaX = entityIntersection.x - entity.wipPosition.x

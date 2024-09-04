@@ -8,12 +8,11 @@ import com.github.knokko.update.UpdateLoop
 import fixie.*
 import balls2d.geometry.LineSegment
 import balls2d.geometry.Position
-import balls2d.physics.entity.EntityProperties
+import balls2d.physics.entity.EntityAttachment
 import balls2d.physics.entity.EntitySpawnRequest
 import balls2d.physics.scene.Scene
 import balls2d.physics.scene.SceneQuery
 import balls2d.physics.tile.TilePlaceRequest
-import balls2d.physics.tile.TileProperties
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Toolkit
@@ -32,24 +31,24 @@ import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.nanoseconds
 
-private fun narrowPipesScene(playerProperties: EntityProperties): Pair<Scene, UUID> {
+private fun narrowPipesScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
 	val scene = Scene()
 
-	val spawnPlayer = EntitySpawnRequest(x = 1.m, y = 5.m, properties = playerProperties)
+	val spawnPlayer = EntitySpawnRequest(x = 1.m, y = 5.m, radius = 100.mm, attachment = playerAttachment)
 	scene.spawnEntity(spawnPlayer)
-	scene.spawnEntity(EntitySpawnRequest(x = 3.3.m, y = 5.m, properties = EntityProperties(radius = 100.mm)))
+	scene.spawnEntity(EntitySpawnRequest(x = 3.3.m, y = 5.m, radius = 100.mm))
 
-	addNarrowPipes(scene, playerProperties.radius)
+	addNarrowPipes(scene, spawnPlayer.radius)
 
 	scene.update(Duration.ZERO)
 
 	return Pair(scene, spawnPlayer.id!!)
 }
 
-private fun simpleSplitScene(playerProperties: EntityProperties): Pair<Scene, UUID> {
+private fun simpleSplitScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
 	val scene = Scene()
 
-	val spawnPlayer = EntitySpawnRequest(x = 0.m, y = 1.5.m, properties = playerProperties)
+	val spawnPlayer = EntitySpawnRequest(x = 0.m, y = 1.5.m, radius = 100.mm, attachment = playerAttachment)
 	scene.spawnEntity(spawnPlayer)
 	scene.update(Duration.ZERO)
 
@@ -57,30 +56,30 @@ private fun simpleSplitScene(playerProperties: EntityProperties): Pair<Scene, UU
 
 	scene.addTile(TilePlaceRequest(LineSegment(
 			startX = -length, startY = 0.m, lengthX = length, lengthY = -length
-	), TileProperties()))
+	)))
 	scene.addTile(TilePlaceRequest(LineSegment(
 			startX = length, startY = 0.m, lengthX = -length, lengthY = -length
-	), TileProperties()))
+	)))
 
 	for (counter in -5 .. 5) {
 		scene.spawnEntity(EntitySpawnRequest(
-				x = counter.m, y = 0.m, properties = EntityProperties(radius = 0.2.m)
+				x = counter.m, y = 0.m, radius = 200.mm
 		))
 		scene.spawnEntity(EntitySpawnRequest(
-				x = counter.m, y = 0.4.m, properties = EntityProperties(radius = 0.1.m)
+				x = counter.m, y = 0.4.m, radius = 100.mm
 		))
 		scene.spawnEntity(EntitySpawnRequest(
-				x = counter.m, y = 0.9.m, properties = EntityProperties(radius = 0.3.m)
+				x = counter.m, y = 0.9.m, radius = 300.mm
 		))
 	}
 
 	return Pair(scene, spawnPlayer.id!!)
 }
 
-private fun impulseTestScene(playerProperties: EntityProperties): Pair<Scene, UUID> {
+private fun impulseTestScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
 	val scene = Scene()
 
-	val spawnPlayer = EntitySpawnRequest(x = 0.m, y = 1.5.m, properties = playerProperties)
+	val spawnPlayer = EntitySpawnRequest(x = 0.m, y = 1.5.m, radius = 100.mm, attachment = playerAttachment)
 	scene.spawnEntity(spawnPlayer)
 	scene.update(Duration.ZERO)
 
@@ -88,33 +87,32 @@ private fun impulseTestScene(playerProperties: EntityProperties): Pair<Scene, UU
 
 	scene.addTile(TilePlaceRequest(LineSegment(
 			startX = -length, startY = 0.m, lengthX = 2 * length, lengthY = 0.m
-	), TileProperties()))
+	)))
 	scene.addTile(TilePlaceRequest(LineSegment(
 			startX = -length, startY = 0.m, lengthX = -length / 2, lengthY = length
-	), TileProperties()))
+	)))
 	scene.addTile(TilePlaceRequest(LineSegment(
 			startX = length, startY = 0.m, lengthX = length / 2, lengthY = length
-	), TileProperties()))
+	)))
 
 	scene.spawnEntity(EntitySpawnRequest(
-			x = length / 2, y = 2.m, properties = EntityProperties(radius = 1.m)
+			x = length / 2, y = 2.m, radius = 1.m
 	))
 	scene.spawnEntity(EntitySpawnRequest(
-			x = -length / 2, y = 2.m, properties = EntityProperties(radius = 20.mm)
+			x = -length / 2, y = 2.m, radius = 20.mm
 	))
 
 	return Pair(scene, spawnPlayer.id!!)
 }
 
-private fun randomBusyScene(playerProperties: EntityProperties): Pair<Scene, UUID> {
+private fun randomBusyScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
 	val scene = Scene()
 
-	val spawnPlayer = EntitySpawnRequest(x = 0.m, y = 2.m, properties = playerProperties)
+	val spawnPlayer = EntitySpawnRequest(x = 0.m, y = 2.m, radius = 100.mm, attachment = playerAttachment)
 	scene.spawnEntity(spawnPlayer)
 	scene.update(Duration.ZERO)
 
 	val rng = Random(1234)
-	val simpleMaterial = TileProperties()
 
 	for (counter in 0 until 10_000) {
 		scene.addTile(TilePlaceRequest(LineSegment(
@@ -122,31 +120,31 @@ private fun randomBusyScene(playerProperties: EntityProperties): Pair<Scene, UUI
 				startY = rng.nextInt(-100_000, 100_000).mm,
 				lengthX = rng.nextInt(100, 1_000).mm,
 				lengthY = rng.nextInt(100, 1_000).mm,
-		), simpleMaterial))
+		)))
 	}
 	scene.addTile(TilePlaceRequest(LineSegment(
 			startX = -100.m, startY = -100.m,
 			lengthX = 200.m, lengthY = 0.m
-	), simpleMaterial))
+	)))
 	scene.addTile(TilePlaceRequest(LineSegment(
 			startX = -100.m, startY = -100.m,
 			lengthX = 0.m, lengthY = 2000.m
-	), simpleMaterial))
+	)))
 	scene.addTile(TilePlaceRequest(LineSegment(
 			startX = -100.m, startY = 100.m,
 			lengthX = 200.m, lengthY = 0.m
-	), simpleMaterial))
+	)))
 	scene.addTile(TilePlaceRequest(LineSegment(
 			startX = 100.m, startY = -100.m,
 			lengthX = 0.m, lengthY = 2000.m
-	), simpleMaterial))
+	)))
 	scene.update(Duration.ZERO)
 
 	for (counter in 0 until 3000) {
 		scene.spawnEntity(EntitySpawnRequest(
 				x = rng.nextInt(-10_000, 10_000).mm,
 				y = rng.nextInt(-10_000, 10_000).mm,
-				properties = EntityProperties(radius = rng.nextInt(20, 300).mm)
+				radius = rng.nextInt(20, 300).mm
 		))
 	}
 
@@ -175,8 +173,7 @@ fun main() {
 	}
 
 	val lastPlayerPosition = Position.origin()
-	val playerProperties = EntityProperties(
-			radius = 0.1.m,
+	val playerAttachment = EntityAttachment(
 			updateFunction = { position, velocity ->
 				if (moveLeft) velocity.x -= 5.mps2 * Scene.STEP_DURATION
 				if (moveRight) velocity.x += 5.mps2 * Scene.STEP_DURATION
@@ -189,7 +186,7 @@ fun main() {
 			}
 	)
 
-	val (scene, playerID) = simpleSplitScene(playerProperties)
+	val (scene, playerID) = simpleSplitScene(playerAttachment)
 
 	val panel = PhysicsPanel(scene, lastPlayerPosition, playerID)
 	val frame = JFrame()
@@ -263,17 +260,16 @@ class PhysicsPanel(private val scene: Scene, private val playerPosition: Positio
 		)
 
 		val miniScene = Scene()
-		val miniPlayerProperties = EntityProperties(radius = 100.mm)
 		for (index in 0 until sceneQuery.entities.size) {
 			val entity = sceneQuery.entities[index]
 			miniScene.spawnEntity(EntitySpawnRequest(
-					entity.position.x, entity.position.y, if (entity.id == playerID) miniPlayerProperties else entity.properties,
-					entity.velocity.x, entity.velocity.y, entity.angle
+				entity.position.x, entity.position.y, entity.radius, entity.material,
+				EntityAttachment(), entity.velocity.x, entity.velocity.y, entity.angle
 			))
 		}
 		for (index in 0 until sceneQuery.tiles.size) {
 			val tile = sceneQuery.tiles[index]
-			miniScene.addTile(TilePlaceRequest(collider = tile.collider, properties = tile.properties))
+			miniScene.addTile(TilePlaceRequest(collider = tile.collider, material = tile.material))
 		}
 		miniScene.update(Scene.STEP_DURATION)
 
@@ -287,13 +283,14 @@ class PhysicsPanel(private val scene: Scene, private val playerPosition: Positio
 		for (index in 0 until sceneQuery.entities.size) {
 			val entity = sceneQuery.entities[index]
 			for (miniIndex in 0 until miniQuery.entities.size) {
-				val miniEntity = miniQuery.entities[miniIndex]
-
-				if (miniEntity.properties === entity.properties || (entity.id == playerID && miniEntity.properties == miniPlayerProperties)) {
-					entity.position.x = (1.0 - extrapolationFactor) * entity.position.x + extrapolationFactor * miniEntity.position.x
-					entity.position.y = (1.0 - extrapolationFactor) * entity.position.y + extrapolationFactor * miniEntity.position.y
-					break
-				}
+				// TODO Move this logic to the physics engine
+//				val miniEntity = miniQuery.entities[miniIndex]
+//
+//				if (miniEntity.attachment === entity.properties || (entity.id == playerID && miniEntity.properties == miniPlayerProperties)) {
+//					entity.position.x = (1.0 - extrapolationFactor) * entity.position.x + extrapolationFactor * miniEntity.position.x
+//					entity.position.y = (1.0 - extrapolationFactor) * entity.position.y + extrapolationFactor * miniEntity.position.y
+//					break
+//				}
 			}
 			if (entity.id == playerID) playerPosition = entity.position
 		}
@@ -313,10 +310,10 @@ class PhysicsPanel(private val scene: Scene, private val playerPosition: Positio
 		}
 		for (index in 0 until sceneQuery.entities.size) {
 			val entity = sceneQuery.entities[index]
-			val minX = transformX(entity.position.x - entity.properties.radius)
-			val minY = transformY(entity.position.y + entity.properties.radius)
-			val maxX = transformX(entity.position.x + entity.properties.radius)
-			val maxY = transformY(entity.position.y - entity.properties.radius)
+			val minX = transformX(entity.position.x - entity.radius)
+			val minY = transformY(entity.position.y + entity.radius)
+			val maxX = transformX(entity.position.x + entity.radius)
+			val maxY = transformY(entity.position.y - entity.radius)
 
 			fun toColorValue(x: Speed) = min(255, abs(30 * x.toDouble(SpeedUnit.METERS_PER_SECOND)).roundToInt())
 			var blue = 0
@@ -325,8 +322,8 @@ class PhysicsPanel(private val scene: Scene, private val playerPosition: Positio
 			g.color = Color(toColorValue(entity.velocity.x), toColorValue(entity.velocity.y), blue)
 			g.fillOval(minX, minY, maxX - minX, maxY - minY)
 
-			val spotOffset = 0.5f * entity.properties.radius
-			val spotRadius = 0.3f * entity.properties.radius
+			val spotOffset = 0.5f * entity.radius
+			val spotRadius = 0.3f * entity.radius
 			val spotX = entity.position.x + spotOffset * cos(entity.angle)
 			val spotY = entity.position.y + spotOffset * sin(entity.angle)
 
