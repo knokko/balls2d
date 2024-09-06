@@ -124,13 +124,13 @@ class TestScene {
 		val scene = Scene()
 
 		var passedTime = 0.seconds
-		val entityAttachment = EntityAttachment { _, velocity ->
+		val entityAttachment = EntityAttachment { entity ->
 			passedTime += Scene.STEP_DURATION
 
 			// After 0.5 seconds, the ball will accelerate to the right with 5m/s^2, which should cause it to leave the
 			// area within 5 seconds
 			if (passedTime > 500.milliseconds) {
-				velocity.x += 5.mps2 * Scene.STEP_DURATION
+				entity.vx += 5.mps2 * Scene.STEP_DURATION
 			}
 		}
 

@@ -11,6 +11,8 @@ import balls2d.physics.entity.Entity
 import balls2d.physics.entity.EntityClustering
 import java.util.*
 import kotlin.math.*
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
 
 internal class EntityMovement(
 	private val tileTree: TileTree,
@@ -35,7 +37,11 @@ internal class EntityMovement(
 	var originalDelta = 0.m
 	private var remainingBudget = 1.0
 
-	var expectedSpin = 0.radps
+	private var intersectionNormalX = 0.0
+	private var intersectionNormalY = 0.0
+	private var intersectionNormalCounter = 0
+	private var startX = 0.m
+	private var startY = 0.m
 
 	class Intersection {
 		var myX = 0.m
@@ -70,7 +76,11 @@ internal class EntityMovement(
 		deltaX = computeCurrentVelocityX() * Scene.STEP_DURATION
 		deltaY = computeCurrentVelocityY() * Scene.STEP_DURATION
 		originalDelta = sqrt(deltaX * deltaX + deltaY * deltaY)
-		expectedSpin = 0.radps
+		intersectionNormalX = 0.0
+		intersectionNormalY = 0.0
+		intersectionNormalCounter = 0
+		startX = entity.wipPosition.x
+		startY = entity.wipPosition.y
 
 		intersections.clear()
 		properIntersections.clear()
@@ -262,6 +272,48 @@ internal class EntityMovement(
 		processTileOrEntityIntersections(false)
 	}
 
+	private fun computeEquivalent() {
+
+	}
+
+	private fun computeEquivalentSpeed(spin: Spin): Speed {
+		// momentOfInertia = 0.4 * mass * radius^2
+		// applying a perpendicular clockwise force of F Newton for dt seconds at the bottom of the ball would:
+		// - decrease the momentum by F * dt -> decrease the speed by F * dt / mass [m/s]
+		// - increase the angular momentum by F * radius * dt
+		//   -> increase the spin by F * radius * dt / moi = F * dt / (0.4 * mass * radius)
+		//   = (2.5 / radius) * F * dt / mass [rad/s]
+		// so a speed decrease of 1 m/s is proportional to a spin increase of 2.5 / radius rad/s
+		// so a spin increase of 1 rad/s is proportional to a speed decrease of radius / 2.5 m/s
+
+		// TODO Add a nicer way to convert between speed and spin
+		return (spin.toDouble(SpinUnit.RADIANS_PER_SECOND) * entity.radius.toDouble(DistanceUnit.METER) / 2.5).mps
+	}
+
+	fun processRotation() {
+		entity.angle += entity.spin * Scene.STEP_DURATION
+
+		if (intersectionNormalCounter == 0) return
+
+		val normalX = intersectionNormalX / intersectionNormalCounter
+		val normalY = intersectionNormalY / intersectionNormalCounter
+		val dx = entity.wipPosition.x - startX
+		val dy = entity.wipPosition.y - startY
+		val rolledDistance = -normalY * dx + normalX * dy
+
+		val expectedSpin = (rolledDistance / entity.radius / Scene.STEP_DURATION.toDouble(DurationUnit.SECONDS)).radps
+		var deltaSpin = expectedSpin - entity.spin
+
+		val maxDeltaSpin = 4000.degps * Scene.STEP_DURATION.toDouble(DurationUnit.SECONDS)
+		if (abs(deltaSpin) > maxDeltaSpin) deltaSpin = maxDeltaSpin * deltaSpin.value.sign
+
+		val consumedVelocity = computeEquivalentSpeed(deltaSpin)
+
+		entity.spin += deltaSpin
+		entity.wipVelocity.x += normalY * consumedVelocity
+		entity.wipVelocity.y -= normalX * consumedVelocity
+	}
+
 	private fun determineIntersectionFactor(intersection: Intersection, directionX: Double, directionY: Double): Double {
 		val normalX = (intersection.myX - intersection.otherX) / intersection.radius
 		val normalY = (intersection.myY - intersection.otherY) / intersection.radius
@@ -288,6 +340,10 @@ internal class EntityMovement(
 			throw RuntimeException("No no")
 		}
 
+		intersectionNormalX += normalX
+		intersectionNormalY += normalY
+		intersectionNormalCounter += 1
+
 		val intersectionFactor = determineIntersectionFactor(
 				normalX, normalY, directionX, directionY
 		) / totalIntersectionFactor
@@ -309,10 +365,10 @@ internal class EntityMovement(
 		val opposingVelocity = bounceConstant * (normalX * oldVelocityX + normalY * oldVelocityY)
 		val frictionVelocity = frictionConstant * (normalY * oldVelocityX - normalX * oldVelocityY)
 
-		expectedSpin += (frictionVelocity.toDouble(SpeedUnit.METERS_PER_SECOND) / entity.radius.toDouble(DistanceUnit.METER)).radps
-
-		var impulseX = entity.mass * intersectionFactor * (opposingVelocity * normalX + frictionVelocity * normalY)
-		var impulseY = entity.mass * intersectionFactor * (opposingVelocity * normalY - frictionVelocity * normalX)
+		val forceDirectionX = opposingVelocity * normalX + frictionVelocity * normalY
+		val forceDirectionY = opposingVelocity * normalY - frictionVelocity * normalX
+		var impulseX = entity.mass * intersectionFactor * forceDirectionX
+		var impulseY = entity.mass * intersectionFactor * forceDirectionY
 
 		if (otherVelocity != null) {
 			val thresholdFactor = 2.0

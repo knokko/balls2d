@@ -2,6 +2,7 @@ package balls2d.physics.constraint
 
 import balls2d.geometry.Position
 import balls2d.physics.Velocity
+import balls2d.physics.entity.UpdateParameters
 import balls2d.physics.scene.Scene
 import balls2d.physics.util.SlidingWindow
 import fixie.*
@@ -18,11 +19,11 @@ internal class NotMovingConstraint(
 
 	private var lowestSpeed = 100.mps
 
-	override fun check(position: Position, velocity: Velocity) {
+	override fun check(state: UpdateParameters) {
 		if (velocityHistory.getMaximumAge() >= age) {
 			val oldPosition = positionHistory.get(age)
 
-			val currentSpeed = abs(velocity.x) + abs(velocity.y)
+			val currentSpeed = abs(state.vx) + abs(state.vy)
 			val leavingSpeed = velocityHistory.get(velocityHistory.getMaximumAge()).x
 			velocityHistory.claim().x = currentSpeed
 			if (currentSpeed < lowestSpeed) lowestSpeed = currentSpeed
@@ -35,21 +36,22 @@ internal class NotMovingConstraint(
 				}
 			}
 
-			val actualDistance = abs(position.x - oldPosition.x) + abs(position.y - oldPosition.y)
+			val actualDistance = abs(state.x - oldPosition.x) + abs(state.y - oldPosition.y)
 			val expectedDistance = lowestSpeed * Scene.STEP_DURATION * age
 
 			if (expectedDistance > 2 * actualDistance && currentSpeed > 0.5.mps) {
-				velocity.x /= 2
-				velocity.y /= 2
+				state.vx /= 2
+				state.vy /= 2
+				state.spin /= 2
 			}
 		}
 
 		val currentPosition = positionHistory.claim()
-		currentPosition.x = position.x
-		currentPosition.y = position.y
+		currentPosition.x = state.x
+		currentPosition.y = state.y
 
 		val currentVelocity = velocityHistory.claim()
-		currentVelocity.x = velocity.x
-		currentVelocity.y = velocity.y
+		currentVelocity.x = state.vx
+		currentVelocity.y = state.vy
 	}
 }

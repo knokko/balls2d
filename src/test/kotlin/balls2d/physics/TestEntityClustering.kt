@@ -15,7 +15,8 @@ class TestEntityClustering {
 			radius = r,
 			position = Position.origin(),
 			velocity = Velocity.zero(),
-			angle = 0.degrees
+			angle = 0.degrees,
+			spin = 0.radps
 		)
 		entity.wipPosition.x = x
 		entity.wipPosition.y = y

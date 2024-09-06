@@ -30,6 +30,7 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.nanoseconds
+import kotlin.time.DurationUnit
 
 private fun narrowPipesScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
 	val scene = Scene()
@@ -47,7 +48,7 @@ private fun narrowPipesScene(playerAttachment: EntityAttachment): Pair<Scene, UU
 
 private fun stickyBallsScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
 	val scene = Scene()
-	val spawnPlayer = EntitySpawnRequest(x = 3.m, y = 2.m, radius = 100.mm, attachment = playerAttachment)
+	val spawnPlayer = EntitySpawnRequest(x = 4.m, y = 2.m, radius = 100.mm, attachment = playerAttachment)
 	scene.spawnEntity(spawnPlayer)
 
 	addStickyBalls(scene)
@@ -166,6 +167,9 @@ fun main() {
 	var moveLeft = false
 	var moveRight = false
 	var shouldJump = false
+	var shouldFloat = false
+	var rotateClockwise = false
+	var rotateCounterClockwise = false
 
 	class PlayerControls : KeyListener {
 		override fun keyTyped(e: KeyEvent?) {}
@@ -174,26 +178,37 @@ fun main() {
 			if (e!!.keyCode == VK_LEFT || e.keyCode == VK_A) moveLeft = true
 			if (e.keyCode == VK_RIGHT || e.keyCode == VK_D) moveRight = true
 			if (e.keyCode == VK_SPACE || e.keyCode == VK_W || e.keyCode == VK_UP) shouldJump = true
+			if (e.keyCode == VK_F) shouldFloat = true
+			if (e.keyCode == VK_Q) rotateCounterClockwise = true
+			if (e.keyCode == VK_E) rotateClockwise = true
 		}
 
 		override fun keyReleased(e: KeyEvent?) {
 			if (e!!.keyCode == VK_LEFT || e.keyCode == VK_A) moveLeft = false
 			if (e.keyCode == VK_RIGHT || e.keyCode == VK_D) moveRight = false
 			if (e.keyCode == VK_SPACE || e.keyCode == VK_W || e.keyCode == VK_UP) shouldJump = false
+			if (e.keyCode == VK_F) shouldFloat = false
+			if (e.keyCode == VK_Q) rotateCounterClockwise = false
+			if (e.keyCode == VK_E) rotateClockwise = false
 		}
 	}
 
 	val lastPlayerPosition = Position.origin()
 	val playerAttachment = EntityAttachment(
-			updateFunction = { position, velocity ->
-				if (moveLeft) velocity.x -= 5.mps2 * Scene.STEP_DURATION
-				if (moveRight) velocity.x += 5.mps2 * Scene.STEP_DURATION
+			updateFunction = { entity ->
+				if (moveLeft) entity.vx -= 5.mps2 * Scene.STEP_DURATION
+				if (moveRight) entity.vx += 5.mps2 * Scene.STEP_DURATION
 				if (shouldJump) {
-					velocity.y += 4.mps
+					entity.vy += 4.mps
 					shouldJump = false
 				}
-				lastPlayerPosition.x = position.x
-				lastPlayerPosition.y = position.y
+				if (shouldFloat) entity.vy = 0.mps
+
+				// TODO Angular acceleration?
+				if (rotateClockwise) entity.spin -= 3000.degps * Scene.STEP_DURATION.toDouble(DurationUnit.SECONDS)
+				if (rotateCounterClockwise) entity.spin += 3000.degps * Scene.STEP_DURATION.toDouble(DurationUnit.SECONDS)
+				lastPlayerPosition.x = entity.x
+				lastPlayerPosition.y = entity.y
 			}
 	)
 

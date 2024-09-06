@@ -25,7 +25,8 @@ class TestMargin {
 			radius = radius,
 			position = Position(x, y),
 			velocity = Velocity.zero(),
-			angle = 0.degrees
+			angle = 0.degrees,
+			spin = 0.radps
 		)
 		entity.wipPosition.x = x
 		entity.wipPosition.y = y

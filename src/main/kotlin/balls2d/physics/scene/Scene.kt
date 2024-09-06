@@ -10,6 +10,7 @@ import balls2d.physics.constraint.NotMovingConstraint
 import balls2d.physics.entity.Entity
 import balls2d.physics.entity.EntityClustering
 import balls2d.physics.entity.EntitySpawnRequest
+import balls2d.physics.entity.UpdateParameters
 import balls2d.physics.tile.Tile
 import balls2d.physics.tile.TilePlaceRequest
 import balls2d.physics.tile.TileTree
@@ -88,6 +89,7 @@ class Scene {
 						position = Position(request.x, request.y),
 						velocity = Velocity(request.velocityX, request.velocityY),
 						angle = request.angle,
+						spin = request.spin,
 						attachment = request.attachment
 					)
 					entity.constraints.add(MaxAccelerationConstraint(
@@ -173,8 +175,7 @@ class Scene {
 
 		if (movement.intersections.size > 0 && movement.originalDelta > 0.1.mm) movement.retry()
 
-		// TODO Handle spin
-		//println("expected spin is ${movement.expectedSpin}")
+		movement.processRotation()
 		movement.finish()
 	}
 
@@ -183,13 +184,19 @@ class Scene {
 			entityClustering.insert(entity, movement.determineSafeRadius(entity))
 
 			for (constraint in entity.constraints) {
-				constraint.check(entity.wipPosition, entity.wipVelocity)
+				val updateParameters = UpdateParameters(entity)
+				constraint.check(updateParameters)
+				updateParameters.finish()
 			}
 		}
 
 		for (entity in entities) {
 			updateEntity(entity)
-			entity.attachment.updateFunction?.invoke(entity.wipPosition, entity.wipVelocity)
+			if (entity.attachment.updateFunction != null) {
+				val parameters = UpdateParameters(entity)
+				entity.attachment.updateFunction.accept(parameters)
+				parameters.finish()
+			}
 		}
 
 		entityClustering.reset()
@@ -235,6 +242,7 @@ class Scene {
 					qe.velocity.x = entity.velocity.x
 					qe.velocity.y = entity.velocity.y
 					qe.angle = entity.angle
+					qe.spin = entity.spin
 				}
 			}
 		}

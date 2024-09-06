@@ -1,9 +1,8 @@
 package balls2d.physics.constraint
 
-import balls2d.geometry.Position
-import balls2d.physics.Velocity
+import balls2d.physics.entity.UpdateParameters
 
 internal abstract class VelocityConstraint {
 
-	abstract fun check(position: Position, velocity: Velocity)
+	abstract fun check(state: UpdateParameters)
 }

@@ -12,7 +12,8 @@ class EntitySpawnRequest(
 	val attachment: EntityAttachment = EntityAttachment(),
 	val velocityX: Speed = 0.mps,
 	val velocityY: Speed = 0.mps,
-	val angle: Angle = 0.degrees
+	val angle: Angle = 0.degrees,
+	val spin: Spin = 0.radps
 ) {
 	var id: UUID? = null
 

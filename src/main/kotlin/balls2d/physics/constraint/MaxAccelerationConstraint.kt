@@ -1,8 +1,8 @@
 package balls2d.physics.constraint
 
 import fixie.*
-import balls2d.geometry.Position
 import balls2d.physics.Velocity
+import balls2d.physics.entity.UpdateParameters
 import balls2d.physics.scene.Scene
 import balls2d.physics.util.SlidingWindow
 import kotlin.math.roundToInt
@@ -16,18 +16,18 @@ internal class MaxAccelerationConstraint(
 	private val age = (windowSize / Scene.STEP_DURATION).roundToInt()
 	private val velocityHistory = SlidingWindow(Array(age + 1) { Velocity.zero() })
 
-	override fun check(position: Position, velocity: Velocity) {
+	override fun check(state: UpdateParameters) {
 		if (velocityHistory.getMaximumAge() >= age) {
 			val reference = velocityHistory.get(age)
-			val dx = velocity.x - reference.x
-			val dy = velocity.y - reference.y
+			val dx = state.vx - reference.x
+			val dy = state.vy - reference.y
 
-			velocity.x = reference.x + max(-threshold, min(threshold, dx))
-			velocity.y = reference.y + max(-threshold, min(threshold, dy))
+			state.vx = reference.x + max(-threshold, min(threshold, dx))
+			state.vy = reference.y + max(-threshold, min(threshold, dy))
 		}
 
 		val currentVelocity = velocityHistory.claim()
-		currentVelocity.x = velocity.x
-		currentVelocity.y = velocity.y
+		currentVelocity.x = state.vx
+		currentVelocity.y = state.vy
 	}
 }
