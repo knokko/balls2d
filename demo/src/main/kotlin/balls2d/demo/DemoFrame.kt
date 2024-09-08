@@ -28,7 +28,6 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.random.Random
 import kotlin.time.Duration
-import kotlin.time.DurationUnit
 
 private fun narrowPipesScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
 	val scene = Scene()
@@ -201,9 +200,8 @@ fun main() {
 				}
 				if (shouldFloat) entity.vy = 0.mps
 
-				// TODO Angular acceleration?
-				if (rotateClockwise) entity.spin -= 3000.degps * Scene.STEP_DURATION.toDouble(DurationUnit.SECONDS)
-				if (rotateCounterClockwise) entity.spin += 3000.degps * Scene.STEP_DURATION.toDouble(DurationUnit.SECONDS)
+				if (rotateClockwise) entity.spin -= 50.radps2 * Scene.STEP_DURATION
+				if (rotateCounterClockwise) entity.spin += 50.radps2 * Scene.STEP_DURATION
 			}
 	)
 

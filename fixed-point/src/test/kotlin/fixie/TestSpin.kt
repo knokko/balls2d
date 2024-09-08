@@ -96,6 +96,8 @@ class TestSpin {
 		assertEquals(2.0, Spin.DEGREES_PER_SECOND * 360 / (PI * Spin.RADIANS_PER_SECOND), 0.001)
 		assertNotEquals(Spin.DEGREES_PER_SECOND, Spin.RADIANS_PER_SECOND)
 		assertEquals(150.0, (3.seconds * (50 * Spin.DEGREES_PER_SECOND)).toDouble(AngleUnit.DEGREES), 0.5)
+		assertEquals(2.5, ((15 * Spin.RADIANS_PER_SECOND) / 6.seconds).toDouble(), 0.001)
+		assertEquals(0.1 * PI, (720 * Spin.DEGREES_PER_SECOND).toSpeed(0.025 * Displacement.METER).toDouble(SpeedUnit.METERS_PER_SECOND), 5.0)
 	}
 
 	@Test

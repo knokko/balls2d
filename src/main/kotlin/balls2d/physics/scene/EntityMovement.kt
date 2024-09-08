@@ -11,7 +11,6 @@ import balls2d.physics.entity.Entity
 import balls2d.physics.entity.EntityClustering
 import java.util.*
 import kotlin.math.*
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
 internal class EntityMovement(
@@ -272,10 +271,6 @@ internal class EntityMovement(
 		processTileOrEntityIntersections(false)
 	}
 
-	private fun computeEquivalent() {
-
-	}
-
 	private fun computeEquivalentSpeed(spin: Spin): Speed {
 		// momentOfInertia = 0.4 * mass * radius^2
 		// applying a perpendicular clockwise force of F Newton for dt seconds at the bottom of the ball would:
@@ -285,9 +280,7 @@ internal class EntityMovement(
 		//   = (2.5 / radius) * F * dt / mass [rad/s]
 		// so a speed decrease of 1 m/s is proportional to a spin increase of 2.5 / radius rad/s
 		// so a spin increase of 1 rad/s is proportional to a speed decrease of radius / 2.5 m/s
-
-		// TODO Add a nicer way to convert between speed and spin
-		return (spin.toDouble(SpinUnit.RADIANS_PER_SECOND) * entity.radius.toDouble(DistanceUnit.METER) / 2.5).mps
+		return spin.toSpeed(entity.radius) / 2.5
 	}
 
 	fun processRotation() {
