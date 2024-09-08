@@ -24,6 +24,7 @@ private val LIMIT = 10.km
 class Scene {
 
 	private var remainingTime = 0.milliseconds
+	private var lastUpdateTime = 0L
 
 	private var updateThread: Thread? = null
 
@@ -50,6 +51,7 @@ class Scene {
 				entity.wipPosition.y = entity.position.y
 				entity.wipVelocity.x = entity.velocity.x
 				entity.wipVelocity.y = entity.velocity.y
+				entity.oldAngle = entity.angle
 				index += 1
 			}
 		}
@@ -139,13 +141,18 @@ class Scene {
 		synchronized(this) {
 			processEntitySpawnRequests()
 			processTilePlaceRequests()
+			lastUpdateTime = System.nanoTime()
 		}
 	}
 
 	private fun copyStateAfterUpdate() {
 		synchronized(this) {
+			lastUpdateTime = System.nanoTime()
+
 			var index = 0
 			for (entity in entities) {
+				entity.oldPosition.x = entity.position.x
+				entity.oldPosition.y = entity.position.y
 				entity.position.x = entity.wipPosition.x
 				entity.position.y = entity.wipPosition.y
 				entity.velocity.x = entity.wipVelocity.x
@@ -224,6 +231,18 @@ class Scene {
 
 	fun read(query: SceneQuery, minX: Displacement, minY: Displacement, maxX: Displacement, maxY: Displacement) {
 		synchronized(this) {
+			if (
+				query.lastModified == lastUpdateTime && query.minX == minX &&
+				query.minY == minY && query.maxX == maxX && query.maxY == maxY
+			) return
+
+			query.lastModified = lastUpdateTime
+
+			query.minX = minX
+			query.minY = minY
+			query.maxX = maxX
+			query.maxY = maxY
+
 			query.tiles.clear()
 			tileTree.query(minX, minY, maxX, maxY, query.tiles)
 
@@ -237,11 +256,17 @@ class Scene {
 					qe.id = entity.id
 					qe.radius = entity.radius
 					qe.material = entity.material
+					qe.oldPosition.x = entity.oldPosition.x
+					qe.oldPosition.y = entity.oldPosition.y
+					qe.currentPosition.x = p.x
+					qe.currentPosition.y = p.y
 					qe.position.x = p.x
 					qe.position.y = p.y
 					qe.velocity.x = entity.velocity.x
 					qe.velocity.y = entity.velocity.y
+					qe.oldAngle = entity.oldAngle
 					qe.angle = entity.angle
+					qe.currentAngle = entity.angle
 					qe.spin = entity.spin
 				}
 			}

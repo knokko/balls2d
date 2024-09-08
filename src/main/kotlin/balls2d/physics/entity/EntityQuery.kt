@@ -9,9 +9,13 @@ import java.util.*
 
 class EntityQuery {
 	lateinit var id: UUID
+	internal val oldPosition = Position.origin()
+	internal val currentPosition = Position.origin()
 	val position = Position.origin()
 	val velocity = Velocity.zero()
+	internal var oldAngle = 0.degrees
 	var angle = 0.degrees
+	internal var currentAngle = 0.degrees
 	var spin = 0.degps
 	var radius = 0.m
 	var material = Material.IRON

@@ -26,6 +26,9 @@ class Entity(
 	internal val clusteringLists = mutableListOf<MutableList<Entity>>()
 	internal var isAlreadyPresent = false
 
+	internal val oldPosition = Position(position.x, position.y)
+	internal var oldAngle = angle
+
 	val mass: Mass
 		get() = PI * radius * radius * radius * material.density * 4.0 / 3.0
 

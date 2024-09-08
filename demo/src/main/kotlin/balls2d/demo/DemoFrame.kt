@@ -268,11 +268,6 @@ class PhysicsPanel(private val scene: Scene, private val playerPosition: Positio
 		threadID = Thread.currentThread().id
 		val startTime = nanoTime()
 
-		var extrapolationTime = 0.nanoseconds
-		if (lastUpdateTime > 0L) extrapolationTime = (startTime - lastUpdateTime).nanoseconds
-
-		val extrapolationFactor = min(1.0, extrapolationTime / Scene.STEP_DURATION)
-
 		counter.increment()
 		val width = this.width
 		val height = this.height
@@ -285,40 +280,12 @@ class PhysicsPanel(private val scene: Scene, private val playerPosition: Positio
 				playerPosition.x + viewDistance, playerPosition.y + viewDistance
 		)
 
-		val miniScene = Scene()
 		for (index in 0 until sceneQuery.entities.size) {
 			val entity = sceneQuery.entities[index]
-			miniScene.spawnEntity(EntitySpawnRequest(
-				entity.position.x, entity.position.y, entity.radius, entity.material,
-				EntityAttachment(), entity.velocity.x, entity.velocity.y, entity.angle
-			))
-		}
-		for (index in 0 until sceneQuery.tiles.size) {
-			val tile = sceneQuery.tiles[index]
-			miniScene.addTile(TilePlaceRequest(collider = tile.collider, material = tile.material))
-		}
-		miniScene.update(Scene.STEP_DURATION)
-
-		val miniQuery = SceneQuery()
-		miniScene.read(
-				miniQuery, playerPosition.x - viewDistance, playerPosition.y - viewDistance,
-				playerPosition.x + viewDistance, playerPosition.y + viewDistance
-		)
-
-		var playerPosition = playerPosition
-		for (index in 0 until sceneQuery.entities.size) {
-			val entity = sceneQuery.entities[index]
-			for (miniIndex in 0 until miniQuery.entities.size) {
-				// TODO Move this logic to the physics engine
-//				val miniEntity = miniQuery.entities[miniIndex]
-//
-//				if (miniEntity.attachment === entity.properties || (entity.id == playerID && miniEntity.properties == miniPlayerProperties)) {
-//					entity.position.x = (1.0 - extrapolationFactor) * entity.position.x + extrapolationFactor * miniEntity.position.x
-//					entity.position.y = (1.0 - extrapolationFactor) * entity.position.y + extrapolationFactor * miniEntity.position.y
-//					break
-//				}
+			if (entity.id == playerID) {
+				playerPosition.x = entity.position.x
+				playerPosition.y = entity.position.y
 			}
-			if (entity.id == playerID) playerPosition = entity.position
 		}
 
 		fun transformX(x: Displacement) = width / 2 + (200 * (x - playerPosition.x).toDouble(DistanceUnit.METER)).roundToInt()
