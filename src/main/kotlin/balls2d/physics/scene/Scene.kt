@@ -15,6 +15,7 @@ import balls2d.physics.tile.Tile
 import balls2d.physics.tile.TilePlaceRequest
 import balls2d.physics.tile.TileTree
 import balls2d.physics.util.GrowingBuffer
+import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -227,6 +228,22 @@ class Scene {
 
 	fun addTile(request: TilePlaceRequest) {
 		tilesToPlace.add(request)
+	}
+
+	fun read(query: SceneQuery, target: UUID, cameraWidth: Displacement, cameraHeight: Displacement): Position {
+		synchronized(this) {
+			for (entity in entities) {
+				if (entity.id != target) continue
+
+				read(
+					query, entity.position.x - cameraWidth / 2, entity.position.y - cameraHeight / 2,
+					entity.position.x + cameraWidth / 2, entity.position.y + cameraHeight / 2
+				)
+				return Position(entity.position.x, entity.position.y)
+			}
+
+			throw IllegalArgumentException("Can't find entity with ID $target")
+		}
 	}
 
 	fun read(query: SceneQuery, minX: Displacement, minY: Displacement, maxX: Displacement, maxY: Displacement) {

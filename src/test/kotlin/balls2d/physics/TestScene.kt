@@ -255,4 +255,42 @@ class TestScene {
 	private fun assertEquals(expected: Speed, actual: Speed, maxError: Speed) {
 		if (abs(expected - actual) > maxError) assertEquals(expected, actual)
 	}
+
+	@Test
+	fun testReadWithTarget() {
+		val scene = Scene()
+
+		val targetPosition = Position(10.m, 200.m)
+		val request = EntitySpawnRequest(x = targetPosition.x, y = targetPosition.y, radius = 100.mm)
+		scene.spawnEntity(request)
+		scene.spawnEntity(EntitySpawnRequest(x = 9.m, y = 200.m, radius = 100.mm))
+		scene.spawnEntity(EntitySpawnRequest(x = 9.m, y = 20.m, radius = 1.m))
+
+		scene.addTile(TilePlaceRequest(collider = LineSegment(
+			startX = 5.m, startY = 190.m, lengthX = 0.m, lengthY = 200.m
+		)))
+
+		scene.update(0.milliseconds)
+		val target = request.id!!
+
+		val query = SceneQuery()
+		assertEquals(targetPosition, scene.read(query, target, 0.m, 0.m))
+
+		assertEquals(1, query.entities.size)
+		assertEquals(target, query.entities[0].id)
+		assertEquals(10.m, query.entities[0].position.x)
+		assertEquals(0, query.tiles.size)
+
+		assertEquals(targetPosition, scene.read(query, target, 2.m, 0.m))
+		assertEquals(2, query.entities.size)
+		assertEquals(0, query.tiles.size)
+
+		assertEquals(targetPosition, scene.read(query, target, 2.m, 360.m))
+		assertEquals(3, query.entities.size)
+		assertEquals(0, query.tiles.size)
+
+		assertEquals(targetPosition, scene.read(query, target, 10.m, 360.m))
+		assertEquals(3, query.entities.size)
+		assertEquals(1, query.tiles.size)
+	}
 }

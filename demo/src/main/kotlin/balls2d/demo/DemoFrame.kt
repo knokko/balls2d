@@ -7,7 +7,6 @@ import com.github.knokko.update.UpdateCounter
 import com.github.knokko.update.UpdateLoop
 import fixie.*
 import balls2d.geometry.LineSegment
-import balls2d.geometry.Position
 import balls2d.physics.entity.EntityAttachment
 import balls2d.physics.entity.EntitySpawnRequest
 import balls2d.physics.scene.Scene
@@ -29,7 +28,6 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.random.Random
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.DurationUnit
 
 private fun narrowPipesScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
@@ -193,7 +191,6 @@ fun main() {
 		}
 	}
 
-	val lastPlayerPosition = Position.origin()
 	val playerAttachment = EntityAttachment(
 			updateFunction = { entity ->
 				if (moveLeft) entity.vx -= 5.mps2 * Scene.STEP_DURATION
@@ -207,14 +204,12 @@ fun main() {
 				// TODO Angular acceleration?
 				if (rotateClockwise) entity.spin -= 3000.degps * Scene.STEP_DURATION.toDouble(DurationUnit.SECONDS)
 				if (rotateCounterClockwise) entity.spin += 3000.degps * Scene.STEP_DURATION.toDouble(DurationUnit.SECONDS)
-				lastPlayerPosition.x = entity.x
-				lastPlayerPosition.y = entity.y
 			}
 	)
 
 	val (scene, playerID) = simpleSplitScene(playerAttachment)
 
-	val panel = PhysicsPanel(scene, lastPlayerPosition, playerID)
+	val panel = PhysicsPanel(scene, playerID)
 	val frame = JFrame()
 	frame.setSize(1200, 800)
 	frame.isVisible = true
@@ -248,7 +243,7 @@ fun main() {
 	}, 16_666_667L).start()
 }
 
-class PhysicsPanel(private val scene: Scene, private val playerPosition: Position, private val playerID: UUID) : JPanel() {
+class PhysicsPanel(private val scene: Scene, private val playerID: UUID) : JPanel() {
 
 	private val sceneQuery = SceneQuery()
 	private val counter = UpdateCounter()
@@ -274,19 +269,7 @@ class PhysicsPanel(private val scene: Scene, private val playerPosition: Positio
 		g!!.color = Color.WHITE
 		g.fillRect(0, 0, width, height)
 
-		val viewDistance = 5.m
-		scene.read(
-				sceneQuery, playerPosition.x - viewDistance, playerPosition.y - viewDistance,
-				playerPosition.x + viewDistance, playerPosition.y + viewDistance
-		)
-
-		for (index in 0 until sceneQuery.entities.size) {
-			val entity = sceneQuery.entities[index]
-			if (entity.id == playerID) {
-				playerPosition.x = entity.position.x
-				playerPosition.y = entity.position.y
-			}
-		}
+		val playerPosition = scene.read(sceneQuery, playerID, (width / 200.0).m, (height / 200.0).m)
 
 		fun transformX(x: Displacement) = width / 2 + (200 * (x - playerPosition.x).toDouble(DistanceUnit.METER)).roundToInt()
 
