@@ -19,6 +19,7 @@ import java.awt.event.KeyEvent
 import java.awt.event.KeyEvent.*
 import java.awt.event.KeyListener
 import java.lang.System.nanoTime
+import java.lang.Thread.sleep
 import java.util.*
 import javax.swing.JFrame
 import javax.swing.JPanel
@@ -149,13 +150,16 @@ private fun randomBusyScene(playerAttachment: EntityAttachment): Pair<Scene, UUI
 	)))
 	scene.update(Duration.ZERO)
 
-	for (counter in 0 until 3000) {
+	for (counter in 0 until 15_000) {
 		scene.spawnEntity(EntitySpawnRequest(
-				x = rng.nextInt(-10_000, 10_000).mm,
-				y = rng.nextInt(-10_000, 10_000).mm,
+				x = rng.nextInt(-40_000, 40_000).mm,
+				y = rng.nextInt(-40_000, 40_000).mm,
 				radius = rng.nextInt(20, 300).mm
 		))
 	}
+
+	scene.update(Duration.ZERO)
+	println("there are ${scene.entityCount()} entities")
 
 	return Pair(scene, spawnPlayer.id!!)
 }
@@ -205,7 +209,7 @@ fun main() {
 			}
 	)
 
-	val (scene, playerID) = simpleSplitScene(playerAttachment)
+	val (scene, playerID) = randomBusyScene(playerAttachment)
 
 	val panel = PhysicsPanel(scene, playerID)
 	val frame = JFrame()
@@ -216,19 +220,27 @@ fun main() {
 	frame.add(panel)
 
 	val updateCounter = UpdateCounter()
+	var totalUpdates = 0
 	val updateThread = Thread(UpdateLoop({ updateLoop ->
 		updateCounter.increment()
 		val startUpdateTime = nanoTime()
 		scene.update(Scene.STEP_DURATION)
+		totalUpdates += 1
 		val finishUpdateTime = nanoTime()
 		panel.lastUpdateTime = (startUpdateTime + finishUpdateTime) / 2
 		if (!frame.isDisplayable) {
 			updateLoop.stop()
+			println("total updates are $totalUpdates")
 			panel.storage.getThreadStorage(Thread.currentThread().id).print(System.out, 60, 1.0)
 		}
 		if (Math.random() < 0.01) println("UPS is ${updateCounter.value}")
 	}, Scene.STEP_DURATION.inWholeNanoseconds))
 	updateThread.start()
+
+	Thread {
+		sleep(20_000)
+		frame.dispose()
+	}.start()
 
 	UpdateLoop({ renderLoop ->
 		if (!updateThread.isAlive) frame.dispose()

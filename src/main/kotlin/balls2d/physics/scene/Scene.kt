@@ -138,6 +138,8 @@ class Scene {
 		} while (request != null)
 	}
 
+	fun entityCount() = entities.size
+
 	private fun processRequests() {
 		synchronized(this) {
 			processEntitySpawnRequests()
