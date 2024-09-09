@@ -1,0 +1,190 @@
+there are 10266 entities
+FPS is 61
+Took 555us
+UPS is 65
+FPS is 60
+Took 495us
+UPS is 57
+FPS is 61
+Took 533us
+UPS is 57
+UPS is 57
+FPS is 60
+Took 482us
+UPS is 55
+FPS is 61
+Took 546us
+FPS is 60
+Took 560us
+FPS is 61
+Took 299us
+UPS is 45
+UPS is 44
+UPS is 43
+FPS is 61
+Took 469us
+FPS is 61
+Took 235us
+UPS is 39
+UPS is 39
+FPS is 61
+Took 332us
+UPS is 38
+total updates are 943
+7264 samples (100.00%)
+  7266 samples (100.03%) java.lang.Thread.run:
+  line 833:
+    7266 samples (100.03%)
+      7266 samples (100.03%) com.github.knokko.update.UpdateLoop.run:
+      line 138:
+        7266 samples (100.03%)
+          7266 samples (100.03%) balls2d.demo.DemoFrameKt$$Lambda$154/0x0000000800c84af8.accept:
+          line -1:
+            7266 samples (100.03%)
+              7266 samples (100.03%) balls2d.demo.DemoFrameKt.main$lambda$1:
+              line 227:
+                7262 samples (99.97%)
+                  7262 samples (99.97%) balls2d.physics.scene.Scene.update-LRDsOJo:
+                  line 222:
+                    7153 samples (98.47%)
+                      7153 samples (98.47%) balls2d.physics.scene.Scene.updateEntities:
+                      line 205:
+                        5425 samples (74.68%)
+                          5408 samples (74.45%) balls2d.physics.scene.Scene.updateEntity:
+                          line 187:
+                            1973 samples (27.16%)
+                              1963 samples (27.02%) balls2d.physics.scene.EntityMovement.retry:
+                              line 396:
+                                703 samples (9.68%)
+                                  703 samples (9.68%) balls2d.physics.scene.EntityMovement.retryStep:
+                                  line 441:
+                                    304 samples (4.19%)
+                                      301 samples (4.14%) balls2d.physics.scene.EntityMovement.determineEntityIntersections:
+                                      line 162:
+                                        277 samples (3.81%)
+                                          83 samples (1.14%) balls2d.geometry.Geometry.sweepCircleToCircle--ZudLC0:
+                                  line 440:
+                                    177 samples (2.44%)
+                                      174 samples (2.40%) balls2d.physics.scene.EntityMovement.determineTileIntersections:
+                                      line 135:
+                                        164 samples (2.26%)
+                                          164 samples (2.26%) balls2d.geometry.Geometry.sweepCircleToLineSegment-uFJ4bEU:
+                                          line 10:
+                                            164 samples (2.26%)
+                                              136 samples (1.87%) balls2d.geometry.Geometry.sweepCircleToLineSegment-8VUk4HY:
+                                              line 20:
+                                                100 samples (1.38%)
+                                                  97 samples (1.34%) balls2d.geometry.Geometry.distanceBetweenLineSegments-fSZ4D4k:
+                                  line 442:
+                                    157 samples (2.16%)
+                                      117 samples (1.61%) balls2d.physics.scene.EntityMovement.moveSafely:
+                                      line 215:
+                                        81 samples (1.12%)
+                              line 401:
+                                583 samples (8.03%)
+                                  583 samples (8.03%) balls2d.physics.scene.EntityMovement.tryMargin:
+                                  line 415:
+                                    507 samples (6.98%)
+                                      505 samples (6.95%) balls2d.physics.scene.MarginsKt.createMargin-MKZDwB4:
+                                      line 41:
+                                        165 samples (2.27%)
+                                  line 420:
+                                    76 samples (1.05%)
+                              line 402:
+                                576 samples (7.93%)
+                                  576 samples (7.93%) balls2d.physics.scene.EntityMovement.retryStep:
+                                  line 441:
+                                    249 samples (3.43%)
+                                      245 samples (3.37%) balls2d.physics.scene.EntityMovement.determineEntityIntersections:
+                                      line 162:
+                                        231 samples (3.18%)
+                                  line 440:
+                                    160 samples (2.20%)
+                                      153 samples (2.11%) balls2d.physics.scene.EntityMovement.determineTileIntersections:
+                                      line 135:
+                                        147 samples (2.02%)
+                                          147 samples (2.02%) balls2d.geometry.Geometry.sweepCircleToLineSegment-uFJ4bEU:
+                                          line 10:
+                                            147 samples (2.02%)
+                                              124 samples (1.71%) balls2d.geometry.Geometry.sweepCircleToLineSegment-8VUk4HY:
+                                              line 20:
+                                                79 samples (1.09%)
+                                                  79 samples (1.09%) balls2d.geometry.Geometry.distanceBetweenLineSegments-fSZ4D4k:
+                                  line 442:
+                                    121 samples (1.67%)
+                                      99 samples (1.36%) balls2d.physics.scene.EntityMovement.moveSafely:
+                          line 180:
+                            1768 samples (24.34%)
+                              1768 samples (24.34%) balls2d.physics.scene.EntityMovement.determineInterestingTilesAndEntities:
+                              line 111:
+                                769 samples (10.59%)
+                                  749 samples (10.31%) balls2d.physics.tile.TileTree.query-B0vUPzQ:
+                                  line 84:
+                                    575 samples (7.92%)
+                                  line 81:
+                                    132 samples (1.82%)
+                              line 130:
+                                741 samples (10.20%)
+                                  713 samples (9.82%) balls2d.physics.entity.EntityClustering.query:
+                                  line 56:
+                                    492 samples (6.77%)
+                                  line 53:
+                                    198 samples (2.73%)
+                              line 104:
+                                184 samples (2.53%)
+                              line 112:
+                                74 samples (1.02%)
+                          line 182:
+                            707 samples (9.73%)
+                              705 samples (9.71%) balls2d.physics.scene.EntityMovement.determineEntityIntersections:
+                              line 162:
+                                662 samples (9.11%)
+                                  98 samples (1.35%) balls2d.geometry.Geometry.sweepCircleToCircle--ZudLC0:
+                          line 184:
+                            316 samples (4.35%)
+                              256 samples (3.52%) balls2d.physics.scene.EntityMovement.moveSafely:
+                              line 215:
+                                153 samples (2.11%)
+                              line 200:
+                                89 samples (1.23%)
+                          line 181:
+                            279 samples (3.84%)
+                              270 samples (3.72%) balls2d.physics.scene.EntityMovement.determineTileIntersections:
+                              line 135:
+                                243 samples (3.35%)
+                                  243 samples (3.35%) balls2d.geometry.Geometry.sweepCircleToLineSegment-uFJ4bEU:
+                                  line 10:
+                                    243 samples (3.35%)
+                                      237 samples (3.26%) balls2d.geometry.Geometry.sweepCircleToLineSegment-8VUk4HY:
+                                      line 20:
+                                        139 samples (1.91%)
+                                          137 samples (1.89%) balls2d.geometry.Geometry.distanceBetweenLineSegments-fSZ4D4k:
+                          line 185:
+                            190 samples (2.62%)
+                              190 samples (2.62%) balls2d.physics.scene.EntityMovement.processIntersections:
+                              line 278:
+                                84 samples (1.16%)
+                                  80 samples (1.10%) balls2d.physics.scene.EntityMovement.processTileOrEntityIntersections:
+                          line 189:
+                            130 samples (1.79%)
+                              104 samples (1.43%) balls2d.physics.scene.EntityMovement.processRotation:
+                              line 304:
+                                74 samples (1.02%)
+                      line 195:
+                        733 samples (10.09%)
+                          385 samples (5.30%) balls2d.physics.entity.EntityClustering.insert-mxWKVCU:
+                          line 39:
+                            197 samples (2.71%)
+                          line 38:
+                            108 samples (1.49%)
+                      line 197:
+                        500 samples (6.88%)
+                      line 199:
+                        353 samples (4.86%)
+                          72 samples (0.99%) balls2d.physics.constraint.NotMovingConstraint.check:
+                      line 213:
+                        73 samples (1.00%)
+                          73 samples (1.00%) balls2d.physics.entity.EntityClustering.reset:
+                          line 23:
+                            73 samples (1.00%)
+                              72 samples (0.99%) java.util.Collection.removeIf:
