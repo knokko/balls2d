@@ -4,6 +4,7 @@ import balls2d.geometry.Position
 import balls2d.physics.Material
 import balls2d.physics.Velocity
 import balls2d.physics.constraint.VelocityConstraint
+import balls2d.physics.util.GrowingBuffer
 import fixie.*
 import java.util.*
 import kotlin.math.PI
@@ -23,7 +24,9 @@ class Entity(
 
 	internal val wipPosition = Position.origin()
 	internal val wipVelocity = Velocity.zero()
-	internal val clusteringLists = mutableListOf<MutableList<Entity>>()
+	internal val clusteringLists = GrowingBuffer.withMutableElements(10) {
+		GrowingBuffer.withImmutableElements(10, this)
+	}
 	internal var isAlreadyPresent = false
 
 	internal val oldPosition = Position(position.x, position.y)

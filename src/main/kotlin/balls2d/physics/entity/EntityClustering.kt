@@ -8,7 +8,7 @@ private val GRID_SIZE = 1.m
 
 internal class EntityClustering {
 
-	private val entityMap = mutableMapOf<Long, MutableList<Entity>>()
+	private val entityMap = mutableMapOf<Long, GrowingBuffer<Entity>>()
 
 	private fun determineIndex(x: Displacement): Int {
 		val maybeResult = (x / GRID_SIZE).toInt()
@@ -21,7 +21,7 @@ internal class EntityClustering {
 
 	fun reset() {
 		entityMap.values.removeIf {
-			val shouldRemove = it.isEmpty()
+			val shouldRemove = it.size == 0
 			it.clear()
 			shouldRemove
 		}
@@ -38,7 +38,7 @@ internal class EntityClustering {
 		for (indexX in minIndexX..maxIndexX) {
 			for (indexY in minIndexY..maxIndexY) {
 				val key = determineKey(indexX, indexY)
-				val value = entityMap.getOrPut(key) { mutableListOf() }
+				val value = entityMap.getOrPut(key) { GrowingBuffer.withImmutableElements(10, entity) }
 				value.add(entity)
 				entity.clusteringLists.add(value)
 			}
@@ -49,8 +49,10 @@ internal class EntityClustering {
 		if (outEntities.size != 0) throw IllegalArgumentException()
 		entity.isAlreadyPresent = true
 
-		for (cluster in entity.clusteringLists) {
-			for (candidate in cluster) {
+		for (clusterIndex in 0 until entity.clusteringLists.size) {
+			val cluster = entity.clusteringLists[clusterIndex]
+			for (candidateIndex in 0 until cluster.size) {
+				val candidate = cluster[candidateIndex]
 				if (!candidate.isAlreadyPresent) {
 					outEntities.add(candidate)
 					candidate.isAlreadyPresent = true
