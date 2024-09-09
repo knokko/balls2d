@@ -60,10 +60,11 @@ class Scene {
 
 	private val spawnIntersection = Position.origin()
 	private val queryTiles = GrowingBuffer.withImmutableElements(50, DUMMY_TILE)
+	private val tileTreeWorkNodes = GrowingBuffer.withImmutableElements(100, TileTree(0.m, 0.m, 0.m, 0.m))
 
 	private fun canSpawn(x: Displacement, y: Displacement, radius: Displacement): Boolean {
 		val safeRadius = 2 * radius
-		tileTree.query(x - safeRadius, y - safeRadius, x + safeRadius, y + safeRadius, queryTiles)
+		tileTree.query(x - safeRadius, y - safeRadius, x + safeRadius, y + safeRadius, queryTiles, tileTreeWorkNodes)
 		for (index in 0 until queryTiles.size) {
 			if (Geometry.distanceBetweenPointAndLineSegment(
 							x, y, queryTiles[index].collider, spawnIntersection
@@ -263,7 +264,7 @@ class Scene {
 			query.maxY = maxY
 
 			query.tiles.clear()
-			tileTree.query(minX, minY, maxX, maxY, query.tiles)
+			tileTree.query(minX, minY, maxX, maxY, query.tiles, tileTreeWorkNodes)
 
 			query.entities.clear()
 			for (entity in entities) {

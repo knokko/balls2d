@@ -70,10 +70,12 @@ class TileTree(
 		else insertChild(tile)
 	}
 
-	fun query(minX: Displacement, minY: Displacement, maxX: Displacement, maxY: Displacement, outTiles: GrowingBuffer<Tile>) {
-		val nodes = mutableListOf(this)
+	fun query(minX: Displacement, minY: Displacement, maxX: Displacement, maxY: Displacement, outTiles: GrowingBuffer<Tile>, nodes: GrowingBuffer<TileTree>) {
+		//val nodes = mutableListOf<TileTree>()
+		nodes.clear()
+		nodes.add(this)
 
-		while (nodes.isNotEmpty()) {
+		while (nodes.size > 0) {
 			val node = nodes.removeLast()
 			for (candidate in node.leafs) {
 				if (candidate.collider.overlapsBounds(minX, minY, maxX, maxY)) outTiles.add(candidate)

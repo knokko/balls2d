@@ -1,5 +1,6 @@
 package balls2d.physics.entity
 
+import balls2d.physics.util.GrowingBuffer
 import fixie.Displacement
 import fixie.m
 
@@ -44,8 +45,8 @@ internal class EntityClustering {
 		}
 	}
 
-	fun query(entity: Entity, outEntities: MutableList<Entity>) {
-		if (outEntities.isNotEmpty()) throw IllegalArgumentException()
+	fun query(entity: Entity, outEntities: GrowingBuffer<Entity>) {
+		if (outEntities.size != 0) throw IllegalArgumentException()
 		entity.isAlreadyPresent = true
 
 		for (cluster in entity.clusteringLists) {
@@ -57,7 +58,7 @@ internal class EntityClustering {
 			}
 		}
 
-		for (candidate in outEntities) candidate.isAlreadyPresent = false
+		for (index in 0 until outEntities.size) outEntities[index].isAlreadyPresent = false
 		entity.isAlreadyPresent = false
 	}
 }

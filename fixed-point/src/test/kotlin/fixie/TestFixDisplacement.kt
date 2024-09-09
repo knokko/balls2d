@@ -29,7 +29,6 @@ class TestFixDisplacement {
 		assertEquals(FixDisplacement.ONE, FixDisplacement.from(one))
 
 		fun testValue(value: Int) = assertEquals(value, FixDisplacement.from(value).toInt())
-		fun testOverflow(value: Int) = assertThrows(FixedPointException::class.java) { FixDisplacement.from(value) }
 		testValue(-21474)
 		testValue(-1457)
 		testValue(-599)
@@ -38,17 +37,6 @@ class TestFixDisplacement {
 		testValue(99)
 		testValue(1630)
 		testValue(21474)
-
-		testOverflow(-2147483648)
-		testOverflow(-978689185)
-		testOverflow(-974146)
-		testOverflow(-740009)
-		testOverflow(-21475)
-
-		testOverflow(21475)
-		testOverflow(17006839)
-		testOverflow(908752963)
-		testOverflow(2147483647)
 	}
 
 	@Test
@@ -57,7 +45,6 @@ class TestFixDisplacement {
 		assertEquals(FixDisplacement.ONE, FixDisplacement.from(one))
 
 		fun testValue(value: Long) = assertEquals(value, FixDisplacement.from(value).toLong())
-		fun testOverflow(value: Long) = assertThrows(FixedPointException::class.java) { FixDisplacement.from(value) }
 		testValue(-21474)
 		testValue(-1457)
 		testValue(-599)
@@ -66,27 +53,6 @@ class TestFixDisplacement {
 		testValue(99)
 		testValue(1630)
 		testValue(21474)
-
-		testOverflow(Long.MIN_VALUE)
-		testOverflow(-589153389781490615)
-		testOverflow(-43117419028065905)
-		testOverflow(-785861820617605)
-		testOverflow(-19482330338386)
-		testOverflow(-34771906616)
-		testOverflow(-6550113726)
-		testOverflow(-448440224)
-		testOverflow(-2065398)
-		testOverflow(-21475)
-
-		testOverflow(21475)
-		testOverflow(17006839)
-		testOverflow(908752963)
-		testOverflow(6508219567)
-		testOverflow(634087209756)
-		testOverflow(92151804038599)
-		testOverflow(821482842808092)
-		testOverflow(86400144687920735)
-		testOverflow(9223372036854775807)
 	}
 
 	@Test
@@ -109,13 +75,6 @@ class TestFixDisplacement {
 		assertEquals(-579.5949f, FixDisplacement.from(-579.5949f).toFloat(), delta)
 		assertEquals(21474.836f, FixDisplacement.from(21474.836f).toFloat(), delta)
 		assertEquals(-21474.836f, FixDisplacement.from(-21474.836f).toFloat(), delta)
-
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(21476.984f) }
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(-21476.984f) }
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(2175836.0f) }
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(-2175836.0f) }
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(4.61260832E8f) }
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(-4.61260832E8f) }
 	}
 
 	@Test
@@ -138,18 +97,10 @@ class TestFixDisplacement {
 		assertEquals(-579.5948821553071, FixDisplacement.from(-579.5948821553071).toDouble(), delta)
 		assertEquals(21474.83647, FixDisplacement.from(21474.83647).toDouble(), delta)
 		assertEquals(-21474.83647, FixDisplacement.from(-21474.83647).toDouble(), delta)
-
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(21476.983953647) }
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(-21476.983953647) }
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(2175835.9089135965) }
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(-2175835.9089135965) }
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(4.612608397452107E8) }
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(-4.612608397452107E8) }
 	}
 
 	@Test
 	fun testUnaryMinus() {
-		assertThrows(FixedPointException::class.java) { -FixDisplacement.raw(Int.MIN_VALUE) }
 		assertEquals(2147483647, -FixDisplacement.raw(-2147483647).raw)
 		assertEquals(352975531, -FixDisplacement.raw(-352975531).raw)
 		assertEquals(30294627, -FixDisplacement.raw(-30294627).raw)
@@ -199,104 +150,6 @@ class TestFixDisplacement {
 		testValues(1519, 15389, 16908)
 		testValues(21474, 0, 21474)
 		testValues(FixDisplacement.raw(Int.MAX_VALUE - 100000), FixDisplacement.ONE, FixDisplacement.raw(Int.MAX_VALUE))
-
-		fun testOverflowPlus(a: Int, b: Int) {
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) + FixDisplacement.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) + b }
-			assertThrows(FixedPointException::class.java) { a + FixDisplacement.from(b) }
-		}
-
-		fun testOverflowMinus(a: Int, b: Int) {
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) - FixDisplacement.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) - b }
-			assertThrows(FixedPointException::class.java) { a - FixDisplacement.from(b) }
-		}
-
-		fun testOverflowPlus(a: Long, b: Long) {
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) + FixDisplacement.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) + b }
-			assertThrows(FixedPointException::class.java) { a + FixDisplacement.from(b) }
-		}
-
-		fun testOverflowMinus(a: Long, b: Long) {
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) - FixDisplacement.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) - b }
-			assertThrows(FixedPointException::class.java) { a - FixDisplacement.from(b) }
-		}
-
-		fun testOverflowPlus(a: Float, b: Float) {
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) + FixDisplacement.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) + b }
-			assertThrows(FixedPointException::class.java) { a + FixDisplacement.from(b) }
-		}
-
-		fun testOverflowMinus(a: Float, b: Float) {
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) - FixDisplacement.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) - b }
-			assertThrows(FixedPointException::class.java) { a - FixDisplacement.from(b) }
-		}
-
-		fun testOverflowPlus(a: Double, b: Double) {
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) + FixDisplacement.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) + b }
-			assertThrows(FixedPointException::class.java) { a + FixDisplacement.from(b) }
-		}
-
-		fun testOverflowMinus(a: Double, b: Double) {
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) - FixDisplacement.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDisplacement.from(a) - b }
-			assertThrows(FixedPointException::class.java) { a - FixDisplacement.from(b) }
-		}
-
-		testOverflowPlus(-21474, 42949)
-		testOverflowPlus(-21474L, 42949L)
-		testOverflowPlus(-21474.0f, 42949.0f)
-		testOverflowPlus(-21474.0, 42949.0)
-		testOverflowPlus(-21474, 1844702500)
-		testOverflowPlus(-21474L, 1844702500L)
-		testOverflowMinus(-21474, 1)
-		testOverflowMinus(-21474L, 1L)
-		testOverflowMinus(-21474, 4)
-		testOverflowMinus(-21474L, 4L)
-		testOverflowMinus(-21474.0, 4.0)
-		testOverflowPlus(-8417, 29892)
-		testOverflowPlus(-8417L, 29892L)
-		testOverflowPlus(-8417.0f, 29892.0f)
-		testOverflowPlus(-8417.0, 29892.0)
-		testOverflowPlus(-8417, 893591449)
-		testOverflowPlus(-8417L, 893591449L)
-		testOverflowMinus(-8417, 13058)
-		testOverflowMinus(-8417L, 13058L)
-		testOverflowMinus(-8417.0f, 13058.0f)
-		testOverflowMinus(-8417.0, 13058.0)
-		testOverflowMinus(-8417, 170537481)
-		testOverflowMinus(-8417L, 170537481L)
-		testOverflowPlus(0, 21475)
-		testOverflowPlus(0L, 21475L)
-		testOverflowPlus(0, 461218576)
-		testOverflowPlus(0L, 461218576L)
-		testOverflowMinus(0, 21475)
-		testOverflowMinus(0L, 21475L)
-		testOverflowMinus(0, 461218576)
-		testOverflowMinus(0L, 461218576L)
-		testOverflowPlus(1, 21474)
-		testOverflowPlus(1L, 21474L)
-		testOverflowPlus(1, 461175625)
-		testOverflowPlus(1L, 461175625L)
-		testOverflowMinus(1, 21476)
-		testOverflowMinus(1L, 21476L)
-		testOverflowMinus(1, 461261529)
-		testOverflowMinus(1L, 461261529L)
-		testOverflowPlus(21474, 1)
-		testOverflowPlus(21474L, 1L)
-		testOverflowPlus(21474, 4)
-		testOverflowPlus(21474L, 4L)
-		testOverflowPlus(21474.0, 4.0)
-		testOverflowMinus(21474, 42949)
-		testOverflowMinus(21474L, 42949L)
-		testOverflowMinus(21474.0, 42949.0)
-		testOverflowMinus(21474, 1844702500)
-		testOverflowMinus(21474L, 1844702500L)
 		assertEquals(FixDisplacement.raw(2147318865), FixDisplacement.raw(-81135) + 21474)
 	}
 
@@ -308,8 +161,6 @@ class TestFixDisplacement {
 		assertEquals(FixDisplacement.raw(Int.MIN_VALUE), FixDisplacement.raw(Int.MIN_VALUE) / 1)
 		assertEquals(FixDisplacement.raw(Int.MIN_VALUE + 1), -1 * FixDisplacement.raw(Int.MAX_VALUE))
 		assertEquals(FixDisplacement.raw(Int.MIN_VALUE + 1), FixDisplacement.raw(Int.MAX_VALUE) / -1)
-		assertThrows(FixedPointException::class.java) { -1 * FixDisplacement.raw(Int.MIN_VALUE) }
-		assertThrows(FixedPointException::class.java) { FixDisplacement.raw(Int.MIN_VALUE) / -1 }
 
 		fun testValues(a: Long, b: Long) {
 			assertEquals(FixDisplacement.from(a * b), FixDisplacement.from(a) * FixDisplacement.from(b))
@@ -325,12 +176,8 @@ class TestFixDisplacement {
 				assertEquals(FixDisplacement.from(a * b), b.toInt() * FixDisplacement.from(a))
 			}
 		}
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(-21474) * -2445 }
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(-11952) * -5684 }
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(-5684) * 1367 }
 		testValues(-2445, 0)
 		testValues(-469, 1)
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(-397) * 1367 }
 		testValues(-385, 0)
 		testValues(-67, 182)
 		testValues(-8, -469)
@@ -338,12 +185,8 @@ class TestFixDisplacement {
 		testValues(1, 1)
 		testValues(24, 163)
 		testValues(65, -67)
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(163) * -2445 }
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(182) * -397 }
 		testValues(775, 1)
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(994) * 182 }
 		testValues(1367, 0)
-		assertThrows(FixedPointException::class.java) { FixDisplacement.from(2428) * 2428 }
 		testValues(21474, 1)
 		assertEquals(FixDisplacement.raw(-82055), (FixDisplacement.raw(-82055) * FixDisplacement.raw(94770)) / FixDisplacement.raw(94770), FixDisplacement.raw(1000))
 	}
@@ -437,7 +280,6 @@ class TestFixDisplacement {
 		assertEquals(FixDisplacement.ONE, abs(-FixDisplacement.ONE))
 		assertEquals(FixDisplacement.raw(Int.MAX_VALUE), abs(FixDisplacement.raw(Int.MAX_VALUE)))
 		assertEquals(FixDisplacement.raw(Int.MAX_VALUE), abs(-FixDisplacement.raw(Int.MAX_VALUE)))
-		assertThrows(FixedPointException::class.java) { abs(FixDisplacement.raw(Int.MIN_VALUE)) }
 	}
 
 	@Test

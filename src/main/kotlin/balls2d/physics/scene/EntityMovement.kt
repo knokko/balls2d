@@ -24,7 +24,10 @@ internal class EntityMovement(
 	private val interestingTiles = mutableListOf<Tile>()
 	private val queryTiles = GrowingBuffer.withImmutableElements(10, DUMMY_TILE)
 
-	private val interestingEntities = mutableListOf<Entity>()
+	private val interestingEntities = GrowingBuffer.withImmutableElements(100, Entity(
+		radius = 1.m, position = Position.origin(), velocity = Velocity.zero(),
+		angle = 0.degrees, spin = 0.degps
+	))
 
 	private val entityIntersection = Position.origin()
 	private val tileIntersection = Position.origin()
@@ -95,6 +98,8 @@ internal class EntityMovement(
 		return marginFactor * (abs(vx) + abs(vy) + marginDistance + entity.radius)
 	}
 
+	private val tileTreeWorkNodes = GrowingBuffer.withImmutableElements(100, TileTree(0.m, 0.m, 0.m, 0.m))
+
 	fun determineInterestingTilesAndEntities() {
 		val safeRadius = determineSafeRadius(entity)
 		val safeMinX = entity.position.x - safeRadius
@@ -103,7 +108,7 @@ internal class EntityMovement(
 		val safeMaxY = entity.position.y + safeRadius
 		queryTiles.clear()
 		interestingTiles.clear()
-		tileTree.query(safeMinX, safeMinY, safeMaxX, safeMaxY, queryTiles)
+		tileTree.query(safeMinX, safeMinY, safeMaxX, safeMaxY, queryTiles, tileTreeWorkNodes)
 		for (index in 0 until queryTiles.size) {
 			val tile = queryTiles[index]
 			val endX = tile.collider.startX + tile.collider.lengthX
@@ -152,7 +157,8 @@ internal class EntityMovement(
 	}
 
 	fun determineEntityIntersections() {
-		for (other in interestingEntities) {
+		for (index in 0 until interestingEntities.size) {
+			val other = interestingEntities[index]
 			if (Geometry.sweepCircleToCircle(
 							entity.wipPosition.x, entity.wipPosition.y, entity.radius, deltaX, deltaY,
 							other.wipPosition.x, other.wipPosition.y, other.radius, entityIntersection
@@ -206,7 +212,8 @@ internal class EntityMovement(
 			} else break
 		}
 
-		for (other in interestingEntities) {
+		for (index in 0 until interestingEntities.size) {
+			val other = interestingEntities[index]
 			val dx = entity.wipPosition.x + deltaX - other.wipPosition.x
 			val dy = entity.wipPosition.y + deltaY - other.wipPosition.y
 			if (sqrt(dx * dx + dy * dy) <= entity.radius + other.radius) {
@@ -396,11 +403,16 @@ internal class EntityMovement(
 		}
 	}
 
+	private val dummyMarginEntityBuffer = GrowingBuffer.withImmutableElements(100, Entity(
+		radius = 1.m, position = Position.origin(), velocity = Velocity.zero(),
+		angle = 0.degrees, spin = 0.degps
+	))
+
 	private fun tryMargin() {
 		entityIntersection.x = entity.wipPosition.x
 		entityIntersection.y = entity.wipPosition.y
 
-		if (createMargin(entityIntersection, entity.radius, interestingEntities, interestingTiles, 0.2.mm)) {
+		if (createMargin(entityIntersection, entity.radius, interestingEntities, dummyMarginEntityBuffer, interestingTiles, 0.2.mm)) {
 			val oldTargetX = entity.wipPosition.x + deltaX
 			val oldTargetY = entity.wipPosition.y + deltaY
 			deltaX = entityIntersection.x - entity.wipPosition.x

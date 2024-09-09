@@ -5,18 +5,23 @@ import balls2d.geometry.Geometry
 import balls2d.geometry.Position
 import balls2d.physics.entity.Entity
 import balls2d.physics.tile.Tile
+import balls2d.physics.util.GrowingBuffer
 
 fun createMargin(
 	position: Position, radius: Displacement,
-	otherEntities: List<Entity>, tiles: List<Tile>, margin: Displacement
+	otherEntities: GrowingBuffer<Entity>, dummyEntityBuffer: GrowingBuffer<Entity>,
+	tiles: List<Tile>, margin: Displacement
 ): Boolean {
 
 	val largeMargin = 2 * margin
 	val largestMargin = 3 * margin
-	val veryCloseEntities = otherEntities.filter {
-		val currentDistance = position.distance(it.wipPosition.x, it.wipPosition.y)
-		val currentMargin = currentDistance - radius - it.radius
-		currentMargin < largestMargin
+
+	dummyEntityBuffer.clear()
+	for (index in 0 until otherEntities.size) {
+		val other = otherEntities[index]
+		val currentDistance = position.distance(other.wipPosition.x, other.wipPosition.y)
+		val currentMargin = currentDistance - radius - other.radius
+		if (currentMargin < largestMargin) dummyEntityBuffer.add(other)
 	}
 
 	val dummyPoint = Position.origin()
@@ -33,7 +38,8 @@ fun createMargin(
 	for (counter in 0 until 5) {
 		var newX = position.x
 		var newY = position.y
-		for (other in veryCloseEntities) {
+		for (index in 0 until dummyEntityBuffer.size) {
+			val other = dummyEntityBuffer[index]
 			val dx = other.wipPosition.x - newX
 			val dy = other.wipPosition.y - newY
 			val currentDistance = sqrt(dx * dx + dy * dy)
@@ -59,7 +65,8 @@ fun createMargin(
 		if (position.x == newX && position.y == newY) return false
 
 		var failed = position.distance(newX, newY) > largeMargin
-		for (other in veryCloseEntities) {
+		for (index in 0 until dummyEntityBuffer.size) {
+			val other = dummyEntityBuffer[index]
 			val currentDistance = other.wipPosition.distance(newX, newY)
 			val currentMargin = currentDistance - radius - other.radius
 			if (desiredMargin * 0.6 > currentMargin) {

@@ -26,23 +26,9 @@ class TestFixDensity {
 		assertEquals(FixDensity.ONE, FixDensity.from(one))
 
 		fun testValue(value: Int) = assertEquals(value, FixDensity.from(value).toInt())
-		fun testOverflow(value: Int) = assertThrows(FixedPointException::class.java) { FixDensity.from(value) }
 		testValue(0)
 		testValue(1)
 		testValue(65)
-
-		testOverflow(-2147483648)
-		testOverflow(-978689185)
-		testOverflow(-974146)
-		testOverflow(-740009)
-		testOverflow(-16299)
-		testOverflow(-1)
-
-		testOverflow(66)
-		testOverflow(11356)
-		testOverflow(2716636)
-		testOverflow(132636241)
-		testOverflow(2147483647)
 	}
 
 	@Test
@@ -51,35 +37,9 @@ class TestFixDensity {
 		assertEquals(FixDensity.ONE, FixDensity.from(one))
 
 		fun testValue(value: Long) = assertEquals(value, FixDensity.from(value).toLong())
-		fun testOverflow(value: Long) = assertThrows(FixedPointException::class.java) { FixDensity.from(value) }
 		testValue(0)
 		testValue(1)
 		testValue(65)
-
-		testOverflow(Long.MIN_VALUE)
-		testOverflow(-589153389781490615)
-		testOverflow(-43117419028065905)
-		testOverflow(-785861820617605)
-		testOverflow(-19482330338386)
-		testOverflow(-34771906616)
-		testOverflow(-6550113726)
-		testOverflow(-448440224)
-		testOverflow(-2065398)
-		testOverflow(-11740)
-		testOverflow(-7239)
-		testOverflow(-1)
-
-		testOverflow(66)
-		testOverflow(11356)
-		testOverflow(2716636)
-		testOverflow(132636241)
-		testOverflow(3837660691)
-		testOverflow(102037718619)
-		testOverflow(1259591443114)
-		testOverflow(527227515052805)
-		testOverflow(12925866574619608)
-		testOverflow(923512679707181018)
-		testOverflow(9223372036854775807)
 	}
 
 	@Test
@@ -90,11 +50,6 @@ class TestFixDensity {
 		assertEquals(0.06078089f, FixDensity.from(0.06078089f).toFloat(), delta)
 		assertEquals(3.2344286f, FixDensity.from(3.2344286f).toFloat(), delta)
 		assertEquals(65.46947f, FixDensity.from(65.46947f).toFloat(), delta)
-
-		assertThrows(FixedPointException::class.java) { FixDensity.from(66.535f) }
-		assertThrows(FixedPointException::class.java) { FixDensity.from(-66.535f) }
-		assertThrows(FixedPointException::class.java) { FixDensity.from(4426.9062f) }
-		assertThrows(FixedPointException::class.java) { FixDensity.from(-4426.9062f) }
 	}
 
 	@Test
@@ -105,11 +60,6 @@ class TestFixDensity {
 		assertEquals(0.06078089006529382, FixDensity.from(0.06078089006529382).toDouble(), delta)
 		assertEquals(3.2344286451819104, FixDensity.from(3.2344286451819104).toDouble(), delta)
 		assertEquals(65.535, FixDensity.from(65.535).toDouble(), delta)
-
-		assertThrows(FixedPointException::class.java) { FixDensity.from(66.535) }
-		assertThrows(FixedPointException::class.java) { FixDensity.from(-66.535) }
-		assertThrows(FixedPointException::class.java) { FixDensity.from(4426.906225) }
-		assertThrows(FixedPointException::class.java) { FixDensity.from(-4426.906225) }
 	}
 
 	@Test
@@ -134,94 +84,6 @@ class TestFixDensity {
 		testValues(1, 54, 55)
 		testValues(65, 0, 65)
 		testValues(FixDensity.raw((UShort.MAX_VALUE - 1000u).toUShort()), FixDensity.ONE, FixDensity.raw(UShort.MAX_VALUE))
-
-		fun testOverflowPlus(a: Int, b: Int) {
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) + FixDensity.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) + b }
-			assertThrows(FixedPointException::class.java) { a + FixDensity.from(b) }
-		}
-
-		fun testOverflowMinus(a: Int, b: Int) {
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) - FixDensity.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) - b }
-			assertThrows(FixedPointException::class.java) { a - FixDensity.from(b) }
-		}
-
-		fun testOverflowPlus(a: Long, b: Long) {
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) + FixDensity.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) + b }
-			assertThrows(FixedPointException::class.java) { a + FixDensity.from(b) }
-		}
-
-		fun testOverflowMinus(a: Long, b: Long) {
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) - FixDensity.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) - b }
-			assertThrows(FixedPointException::class.java) { a - FixDensity.from(b) }
-		}
-
-		fun testOverflowPlus(a: Float, b: Float) {
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) + FixDensity.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) + b }
-			assertThrows(FixedPointException::class.java) { a + FixDensity.from(b) }
-		}
-
-		fun testOverflowMinus(a: Float, b: Float) {
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) - FixDensity.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) - b }
-			assertThrows(FixedPointException::class.java) { a - FixDensity.from(b) }
-		}
-
-		fun testOverflowPlus(a: Double, b: Double) {
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) + FixDensity.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) + b }
-			assertThrows(FixedPointException::class.java) { a + FixDensity.from(b) }
-		}
-
-		fun testOverflowMinus(a: Double, b: Double) {
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) - FixDensity.from(b) }
-			assertThrows(FixedPointException::class.java) { FixDensity.from(a) - b }
-			assertThrows(FixedPointException::class.java) { a - FixDensity.from(b) }
-		}
-
-		testOverflowPlus(0, 66)
-		testOverflowPlus(0L, 66L)
-		testOverflowPlus(0, 4489)
-		testOverflowPlus(0L, 4489L)
-		testOverflowMinus(0, 1)
-		testOverflowMinus(0L, 1L)
-		testOverflowMinus(0, 4)
-		testOverflowMinus(0L, 4L)
-		testOverflowPlus(1, 65)
-		testOverflowPlus(1L, 65L)
-		testOverflowPlus(1.0f, 65.0f)
-		testOverflowPlus(1.0, 65.0)
-		testOverflowPlus(1, 4356)
-		testOverflowPlus(1L, 4356L)
-		testOverflowPlus(1.0, 4356.0)
-		testOverflowMinus(1, 2)
-		testOverflowMinus(1L, 2L)
-		testOverflowMinus(1.0f, 2.0f)
-		testOverflowMinus(1.0, 2.0)
-		testOverflowMinus(1, 9)
-		testOverflowMinus(1L, 9L)
-		testOverflowMinus(1.0f, 9.0f)
-		testOverflowMinus(1.0, 9.0)
-		testOverflowPlus(65, 1)
-		testOverflowPlus(65L, 1L)
-		testOverflowPlus(65.0f, 1.0f)
-		testOverflowPlus(65.0, 1.0)
-		testOverflowPlus(65, 4)
-		testOverflowPlus(65L, 4L)
-		testOverflowPlus(65.0f, 4.0f)
-		testOverflowPlus(65.0, 4.0)
-		testOverflowMinus(65, 66)
-		testOverflowMinus(65L, 66L)
-		testOverflowMinus(65.0f, 66.0f)
-		testOverflowMinus(65.0, 66.0)
-		testOverflowMinus(65, 4489)
-		testOverflowMinus(65L, 4489L)
-		testOverflowMinus(65.0f, 4489.0f)
-		testOverflowMinus(65.0, 4489.0)
 		assertEquals(FixDensity.raw(64440u), FixDensity.raw(440u) + 64)
 	}
 
@@ -229,10 +91,6 @@ class TestFixDensity {
 	fun testMultiplicationAndDivision() {
 		assertEquals(FixDensity.raw(UShort.MAX_VALUE), 1 * FixDensity.raw(UShort.MAX_VALUE))
 		assertEquals(FixDensity.raw(UShort.MAX_VALUE), FixDensity.raw(UShort.MAX_VALUE) / 1)
-		assertThrows(FixedPointException::class.java) { -1 * FixDensity.ONE }
-		assertThrows(FixedPointException::class.java) { FixDensity.ONE / -1 }
-		assertThrows(FixedPointException::class.java) { -1 * FixDensity.raw(UShort.MAX_VALUE)}
-		assertThrows(FixedPointException::class.java) { FixDensity.raw(UShort.MAX_VALUE) / -1 }
 
 		fun testValues(a: Long, b: Long) {
 			assertEquals(FixDensity.from(a * b), FixDensity.from(a) * FixDensity.from(b))

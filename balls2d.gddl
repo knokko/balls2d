@@ -6,13 +6,13 @@
 			className = "FixDisplacement",
 			internalType = "Int",
 			oneValue = 1e5,
-			checkOverflow = true
+			checkOverflow = false
 		},
 		{
 			className = "FixDensity",
 			internalType = "UShort",
 			oneValue = 1000,
-			checkOverflow = true
+			checkOverflow = false
 		}
 	],
 	accelerations = [{

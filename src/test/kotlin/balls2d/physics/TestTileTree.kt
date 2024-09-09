@@ -54,6 +54,7 @@ class TestTileTree {
 
 	@Test
 	fun testRandomIntersectionCorrectness() {
+		val tileTreeWorkNodes = GrowingBuffer.withImmutableElements(100, TileTree(0.m, 0.m, 0.m, 0.m))
 		val rng = Random(1234)
 		val tree = TileTree(minX = -10.km, minY = -10.km, maxX = 10.km, maxY = 10.km)
 
@@ -67,7 +68,7 @@ class TestTileTree {
 
 			fun check(minX: Displacement, minY: Displacement, maxX: Displacement, maxY: Displacement) {
 				val testList = GrowingBuffer.withImmutableElements(100, DUMMY_TILE)
-				tree.query(minX, minY, maxX, maxY, testList)
+				tree.query(minX, minY, maxX, maxY, testList, tileTreeWorkNodes)
 				assertTrue(testList.contains(tile))
 			}
 

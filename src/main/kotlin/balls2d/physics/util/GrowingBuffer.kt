@@ -25,6 +25,11 @@ class GrowingBuffer<T>(private var elements: Array<T>, private val createInstanc
 		size += 1
 	}
 
+	fun removeLast(): T {
+		size -= 1
+		return elements[size]
+	}
+
 	operator fun get(index: Int) = elements[index]
 
 	fun clear() {
