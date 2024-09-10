@@ -17,6 +17,8 @@ import balls2d.physics.tile.TileTree
 import balls2d.physics.util.GrowingBuffer
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -174,7 +176,7 @@ class Scene {
 
 	private val movement = EntityMovement(tileTree, entityClustering)
 
-	private fun updateEntity(entity: Entity) {
+	private fun updateEntity(entity: Entity, movement: EntityMovement) {
 		movement.start(entity)
 
 		movement.determineInterestingTilesAndEntities()
@@ -191,24 +193,75 @@ class Scene {
 	}
 
 	private fun updateEntities() {
-		for (entity in entities) {
-			entityClustering.insert(entity, movement.determineSafeRadius(entity))
+		for (entity in entities) entityClustering.insert(entity, movement.determineSafeRadius(entity))
 
-			for (constraint in entity.constraints) {
-				val updateParameters = UpdateParameters(entity)
-				constraint.check(updateParameters)
-				updateParameters.finish()
+		val threadClustering = mutableMapOf<Entity, MutableSet<Entity>>()
+		val threadQueue = LinkedBlockingQueue<MutableSet<Entity>>()
+		val finishedThreadQueue = AtomicBoolean(false)
+
+		val numThreads = 16
+		val workerThreads = mutableListOf<Thread>()
+		for (counter in 0 until numThreads) {
+			val thread = Thread {
+				val movement = EntityMovement(tileTree, entityClustering)
+				while (true) {
+					val entitySet = threadQueue.poll()
+					if (entitySet == null) {
+						if (finishedThreadQueue.get()) break
+						Thread.yield()
+						continue
+					}
+					for (entity in entitySet) {
+						for (constraint in entity.constraints) {
+							val updateParameters = UpdateParameters(entity)
+							constraint.check(updateParameters)
+							updateParameters.finish()
+						}
+
+						updateEntity(entity, movement)
+						if (entity.attachment.updateFunction != null) {
+							val parameters = UpdateParameters(entity)
+							entity.attachment.updateFunction.accept(parameters)
+							parameters.finish()
+						}
+					}
+				}
 			}
+			thread.start()
+			workerThreads.add(thread)
 		}
 
 		for (entity in entities) {
-			updateEntity(entity)
-			if (entity.attachment.updateFunction != null) {
-				val parameters = UpdateParameters(entity)
-				entity.attachment.updateFunction.accept(parameters)
-				parameters.finish()
+			if (threadClustering.containsKey(entity)) continue
+
+			val entitySet = mutableSetOf<Entity>()
+
+			val entitiesToProcess = ArrayList<Entity>()
+			entitiesToProcess.add(entity)
+
+			while (entitiesToProcess.isNotEmpty()) {
+				val processingEntity = entitiesToProcess.removeLast()
+				if (entitySet.contains(processingEntity)) continue
+
+				entitySet.add(processingEntity)
+				if (threadClustering.containsKey(processingEntity)) throw IllegalStateException()
+				threadClustering[processingEntity] = entitySet
+
+				for (clusterIndex in 0 until processingEntity.clusteringLists.size) {
+					val cluster = processingEntity.clusteringLists[clusterIndex]
+					for (otherIndex in 0 until cluster.size) {
+						if (!entitySet.contains(cluster[otherIndex])) {
+							entitiesToProcess.add(cluster[otherIndex])
+						}
+					}
+				}
 			}
+
+			threadQueue.add(entitySet)
 		}
+		finishedThreadQueue.set(true)
+
+		for (thread in workerThreads) thread.join()
 
 		entityClustering.reset()
 	}

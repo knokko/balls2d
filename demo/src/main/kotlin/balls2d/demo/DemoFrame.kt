@@ -150,10 +150,10 @@ private fun randomBusyScene(playerAttachment: EntityAttachment): Pair<Scene, UUI
 	)))
 	scene.update(Duration.ZERO)
 
-	for (counter in 0 until 15_000) {
+	for (counter in 0 until 20_000) {
 		scene.spawnEntity(EntitySpawnRequest(
-				x = rng.nextInt(-40_000, 40_000).mm,
-				y = rng.nextInt(-40_000, 40_000).mm,
+				x = rng.nextInt(-50_000, 50_000).mm,
+				y = rng.nextInt(-50_000, 50_000).mm,
 				radius = rng.nextInt(20, 300).mm
 		))
 	}
