@@ -124,7 +124,7 @@ private fun randomBusyScene(playerAttachment: EntityAttachment): Pair<Scene, UUI
 
 	val rng = Random(1234)
 
-	for (counter in 0 until 10_000) {
+	for (counter in 0 until 500_000) {
 		scene.addTile(TilePlaceRequest(LineSegment(
 				startX = rng.nextInt(-100_000, 100_000).mm,
 				startY = rng.nextInt(-100_000, 100_000).mm,
@@ -150,11 +150,11 @@ private fun randomBusyScene(playerAttachment: EntityAttachment): Pair<Scene, UUI
 	)))
 	scene.update(Duration.ZERO)
 
-	for (counter in 0 until 20_000) {
+	for (counter in 0 until 35_000) {
 		scene.spawnEntity(EntitySpawnRequest(
-				x = rng.nextInt(-50_000, 50_000).mm,
-				y = rng.nextInt(-50_000, 50_000).mm,
-				radius = rng.nextInt(20, 300).mm
+				x = rng.nextInt(-80_000, 80_000).mm,
+				y = rng.nextInt(-80_000, 80_000).mm,
+				radius = rng.nextInt(10, 30).mm
 		))
 	}
 

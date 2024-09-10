@@ -1,0 +1,4 @@
+singlethreaded: at most ~7500 balls
+multithreaded with 10k line segments: at most ~14000 balls
+multithreaded with 30k line segments: at most ~22000 balls
+multithreaded with 100k line segments: at most ~23000 balls
