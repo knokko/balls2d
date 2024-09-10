@@ -31,6 +31,7 @@ class Entity(
 
 	internal val oldPosition = Position(position.x, position.y)
 	internal var oldAngle = angle
+	internal var marginCooldown = 0
 
 	val mass: Mass
 		get() = PI * radius * radius * radius * material.density * 4.0 / 3.0

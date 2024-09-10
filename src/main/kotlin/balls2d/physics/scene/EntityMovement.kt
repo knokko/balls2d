@@ -409,6 +409,9 @@ internal class EntityMovement(
 	))
 
 	private fun tryMargin() {
+		if (entity.marginCooldown > 0) return
+		entity.marginCooldown = 20
+
 		entityIntersection.x = entity.wipPosition.x
 		entityIntersection.y = entity.wipPosition.y
 
@@ -448,5 +451,6 @@ internal class EntityMovement(
 		interestingEntities.clear()
 
 		entity.wipVelocity.y -= 9.8.mps2 * Scene.STEP_DURATION
+		if (entity.marginCooldown > 0) entity.marginCooldown -= 1
 	}
 }

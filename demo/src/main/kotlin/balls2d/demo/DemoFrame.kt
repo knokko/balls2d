@@ -238,8 +238,8 @@ fun main() {
 	updateThread.start()
 
 	Thread {
-		sleep(20_000)
-		frame.dispose()
+		//sleep(20_000)
+		//frame.dispose()
 	}.start()
 
 	UpdateLoop({ renderLoop ->
@@ -280,6 +280,15 @@ class PhysicsPanel(private val scene: Scene, private val playerID: UUID) : JPane
 		g.fillRect(0, 0, width, height)
 
 		val playerPosition = scene.read(sceneQuery, playerID, (width / 200.0).m, (height / 200.0).m)
+		//sceneQuery.extrapolateAccurately(nanoTime())
+
+		for (index in 0 until sceneQuery.entities.size) {
+			val entity = sceneQuery.entities[index]
+			if (entity.id == playerID) {
+				playerPosition.x = entity.position.x
+				playerPosition.y = entity.position.y
+			}
+		}
 
 		fun transformX(x: Displacement) = width / 2 + (200 * (x - playerPosition.x).toDouble(DistanceUnit.METER)).roundToInt()
 
