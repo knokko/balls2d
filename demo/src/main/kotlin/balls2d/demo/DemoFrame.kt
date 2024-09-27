@@ -12,6 +12,7 @@ import balls2d.physics.entity.EntitySpawnRequest
 import balls2d.physics.scene.Scene
 import balls2d.physics.scene.SceneQuery
 import balls2d.physics.tile.TilePlaceRequest
+import fixie.cos
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Toolkit
@@ -23,11 +24,54 @@ import java.util.*
 import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.WindowConstants.DISPOSE_ON_CLOSE
-import kotlin.math.abs
-import kotlin.math.min
-import kotlin.math.roundToInt
+import kotlin.math.*
 import kotlin.random.Random
 import kotlin.time.Duration
+
+private fun longSlopeScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
+	val scene = Scene()
+
+	val spawnPlayer = EntitySpawnRequest(x = 100.mm, y = 100.mm, radius = 100.mm, attachment = playerAttachment)
+	scene.spawnEntity(spawnPlayer)
+	val step = 10
+	for (raw in 0 until 100_000 step step) {
+		scene.addTile(
+			TilePlaceRequest(
+				collider = LineSegment(
+					startX = raw.mm,
+					startY = -raw.mm,
+					lengthX = step.mm,
+					lengthY = -step.mm
+				)
+			)
+		)
+	}
+	scene.update(Duration.ZERO)
+	return Pair(scene, spawnPlayer.id!!)
+}
+
+private fun sinScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
+	val scene = Scene()
+
+	//val spawnPlayer = EntitySpawnRequest(x = -2.m, y = 1.m, radius = 100.mm, attachment = playerAttachment, velocityX = 0.mps)
+	val spawnPlayer = EntitySpawnRequest(x = -9.m, y = 2.5.m, radius = 100.mm, attachment = playerAttachment, velocityX = 0.mps)
+	scene.spawnEntity(spawnPlayer)
+
+	val step = 1
+	for (rawX in -10_000 until 50_000 step step) {
+
+		fun computeY(x: Displacement) = 2 * sin((x / 2).toDouble(DistanceUnit.METER)).m
+
+		val x1 = rawX.mm
+		val x2 = (rawX + step).mm
+		val y1 = computeY(x1)
+		val y2 = computeY(x2)
+		scene.addTile(TilePlaceRequest(collider = LineSegment(startX = x1, startY = y1, lengthX = x2 - x1, lengthY = y2 - y1)))
+	}
+
+	scene.update(Duration.ZERO)
+	return Pair(scene, spawnPlayer.id!!)
+}
 
 private fun narrowPipesScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
 	val scene = Scene()
@@ -205,7 +249,7 @@ fun main() {
 			}
 	)
 
-	val (scene, playerID) = simpleSplitScene(playerAttachment)
+	val (scene, playerID) = longSlopeScene(playerAttachment)
 
 	val panel = PhysicsPanel(scene, playerID)
 	val frame = JFrame()
@@ -224,15 +268,17 @@ fun main() {
 		panel.lastUpdateTime = (startUpdateTime + finishUpdateTime) / 2
 		if (!frame.isDisplayable) {
 			updateLoop.stop()
-			panel.storage.getThreadStorage(Thread.currentThread().id).print(System.out, 60, 1.0)
+			//panel.storage.getThreadStorage(Thread.currentThread().id).print(System.out, 60, 1.0)
 		}
-		if (Math.random() < 0.01) println("UPS is ${updateCounter.value}")
+		if (Math.random() < 0.0001) println("UPS is ${updateCounter.value}")
 	}, Scene.STEP_DURATION.inWholeNanoseconds))
 	updateThread.start()
 
+	val startTime = nanoTime()
 	UpdateLoop({ renderLoop ->
 		if (!updateThread.isAlive) frame.dispose()
 		frame.repaint()
+		//if (nanoTime() - startTime > 2.7e9) frame.dispose()
 		if (!frame.isDisplayable) {
 			renderLoop.stop()
 			panel.profiler.stop()

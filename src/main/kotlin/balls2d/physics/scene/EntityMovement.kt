@@ -34,7 +34,7 @@ internal class EntityMovement(
 	private var deltaX = 0.m
 	private var deltaY = 0.m
 	var originalDelta = 0.m
-	private var remainingBudget = 1.0
+	internal var remainingBudget = 1.0
 
 	private var intersectionNormalX = 0.0
 	private var intersectionNormalY = 0.0
@@ -131,6 +131,7 @@ internal class EntityMovement(
 							entity.wipPosition.x, entity.wipPosition.y, deltaX, deltaY, entity.radius,
 							tile.collider, entityIntersection, tileIntersection
 					)) {
+				//println("hit interesting tile")
 				val dx = entityIntersection.x - entity.wipPosition.x
 				val dy = entityIntersection.y - entity.wipPosition.y
 
@@ -147,7 +148,7 @@ internal class EntityMovement(
 				intersection.otherID = tile.id
 
 				intersection.validate()
-			}
+			}// else println("missed ${tile.collider} because position is (${entity.wipPosition.x.value.raw}, ${entity.wipPosition.y.value.raw}) and delta is (${deltaX.value.raw}, ${deltaY.value.raw})")
 		}
 	}
 
@@ -180,6 +181,8 @@ internal class EntityMovement(
 	}
 
 	fun moveSafely(allowTeleport: Boolean) {
+		val oldDeltaX = deltaX
+		val oldDeltaY = deltaY
 		if (intersections.size > 0 && !allowTeleport) {
 			var firstIntersection = intersections[0]
 			for (index in 1 until intersections.size) {
@@ -222,6 +225,9 @@ internal class EntityMovement(
 			}
 		}
 
+//		if (abs(oldDeltaX) + abs(oldDeltaY) > 1.5 * (abs(deltaX) + abs(deltaY))) {
+//			println("---------------------------($oldDeltaX, $oldDeltaY) -> ($deltaX, $deltaY)")
+//		}
 		entity.wipPosition.x += deltaX
 		entity.wipPosition.y += deltaY
 	}
@@ -243,6 +249,8 @@ internal class EntityMovement(
 		if (totalIntersectionFactor > 0.0) {
 			val oldVelocityX = computeCurrentVelocityX()
 			val oldVelocityY = computeCurrentVelocityY()
+			entity.wipVelocity.x = 0.mps
+			entity.wipVelocity.y = 0.mps
 			for (intersection in properIntersections) {
 				if (intersection.otherVelocity == null == processTiles) {
 					processIntersection(intersection, oldVelocityX, oldVelocityY, directionX, directionY, totalIntersectionFactor)
@@ -262,6 +270,7 @@ internal class EntityMovement(
 
 		for (index in 0 until intersections.size) {
 			val intersection = intersections[index]
+			// TODO Check what happens when I get rid of the processedIntersections check
 			if (intersection.delta <= firstIntersection.delta + 1.mm && !processedIntersections.contains(intersection.otherID)) {
 				properIntersections.add(intersection)
 			}
@@ -342,7 +351,7 @@ internal class EntityMovement(
 		) / totalIntersectionFactor
 
 		val bounceConstant = entity.material.bounceFactor + intersection.bounce + 1
-		val frictionConstant = 0.01 * entity.material.frictionFactor * intersection.friction
+		val frictionConstant = 0.001 * entity.material.frictionFactor * intersection.friction
 
 		var otherVelocityX = 0.mps
 		var otherVelocityY = 0.mps
@@ -355,6 +364,9 @@ internal class EntityMovement(
 		val relativeVelocityX = oldVelocityX - otherVelocityX
 		val relativeVelocityY = oldVelocityY - otherVelocityY
 
+		val velocityLength = sqrt(oldVelocityX * oldVelocityX + oldVelocityY * oldVelocityY)
+		println("alignment is ${(normalX * oldVelocityX + normalY * oldVelocityY) / velocityLength} and #intersections is ${properIntersections.size} and #interesting tiles is ${interestingTiles.size}")
+		//System.out.printf("normal is (%.2f, %.2f) because my position is (%.5f, %.5f) and other position is (%.3f, %.3f)\n", normalX, normalY, intersection.myX.toDouble(DistanceUnit.METER), intersection.myY.toDouble(DistanceUnit.METER), intersection.otherX.toDouble(DistanceUnit.METER), intersection.otherY.toDouble(DistanceUnit.METER))
 		val opposingVelocity = bounceConstant * (normalX * oldVelocityX + normalY * oldVelocityY)
 		val frictionVelocity = frictionConstant * (normalY * oldVelocityX - normalX * oldVelocityY)
 
@@ -380,27 +392,39 @@ internal class EntityMovement(
 			otherVelocity.y += impulseY / intersection.otherMass
 		}
 
-		entity.wipVelocity.x -= impulseX / entity.mass
-		entity.wipVelocity.y -= impulseY / entity.mass
+		val oldSpeed = sqrt(entity.wipVelocity.x * entity.wipVelocity.x + entity.wipVelocity.y * entity.wipVelocity.y)
+//		entity.wipVelocity.x -= impulseX / entity.mass
+//		entity.wipVelocity.y -= impulseY / entity.mass
+		entity.wipVelocity.x += intersectionFactor * (1 - frictionConstant) * normalY * velocityLength
+		entity.wipVelocity.y -= intersectionFactor * (1 - frictionConstant) * normalX * velocityLength
+		println("new alignment is ${(normalX * entity.wipVelocity.x + normalY * entity.wipVelocity.y) / entity.wipVelocity.length()} and #intersections is ${properIntersections.size} and #interesting tiles is ${interestingTiles.size}")
+//		val newSpeed = sqrt(entity.wipVelocity.x * entity.wipVelocity.x + entity.wipVelocity.y * entity.wipVelocity.y)
+//		val lostSpeed = oldSpeed - newSpeed
+//		println("normal is ($normalX, $normalY) and factor is $intersectionFactor")
+//		if (lostSpeed > 0.1.mps) println("lost speed is $lostSpeed")
 	}
 
 	fun retry() {
 		updateRetryBudget()
 		retryStep()
 
-		val oldBudget = remainingBudget
-		if (oldBudget > 0.5) {
+//		val oldBudget = remainingBudget
+//		if (oldBudget > 0.5) {
+		if (remainingBudget > 0.2) {
 			updateRetryBudget()
-			if (remainingBudget > 0.4) tryMargin()
+			if (remainingBudget > 0.1) tryMargin()
 			retryStep()
+			updateRetryBudget()
 		}
+		//if (remainingBudget > 0.5) System.out.printf("budget is %.1f\n", remainingBudget)
+		//System.out.printf("remaining %.1f\n", remainingBudget)
 	}
 
 	private fun tryMargin() {
 		entityIntersection.x = entity.wipPosition.x
 		entityIntersection.y = entity.wipPosition.y
 
-		if (createMargin(entityIntersection, entity.radius, interestingEntities, interestingTiles, 0.2.mm)) {
+		if (createMargin(entityIntersection, entity.radius, interestingEntities, interestingTiles, 1.2.mm)) {
 			val oldTargetX = entity.wipPosition.x + deltaX
 			val oldTargetY = entity.wipPosition.y + deltaY
 			deltaX = entityIntersection.x - entity.wipPosition.x

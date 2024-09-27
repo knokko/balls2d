@@ -36,7 +36,8 @@ object Geometry {
 		val idealDistance = distanceBetweenPointAndLineSegment(cx + cvx, cy + cvy, lsx, lsy, lslx, lsly, outPointOnLine)
 
 		// Dirty trick
-		if (idealDistance > cr && fullDistance > 0.99 * cr) return false
+		// TODO Maybe get rid of this
+		if (idealDistance > cr && fullDistance > 0.99999 * cr) return false
 
 		var useBinarySearch = false
 		var signumCounter = 0
@@ -370,5 +371,16 @@ object Geometry {
 		val dy = outPointOnLine.y - py
 
 		return sqrt(dx * dx + dy * dy)
+	}
+
+	fun findClosestPointOnBezierToPoint(
+		px: Displacement, py: Displacement,
+		x0: Displacement, y0: Displacement, x1: Displacement, y1: Displacement,
+		x2: Displacement, y2: Displacement, x3: Displacement, y3: Displacement
+	) {
+		val rx0 = x0 - px
+		val ry0 = y0 - py
+
+		// x = (1 - t)^3*x0 + 3 * (1 - t)^2 * t * x1 + 3 * (1 - t) * t^2 * x2 + t^3 * x3
 	}
 }

@@ -181,9 +181,21 @@ class Scene {
 		movement.moveSafely(false)
 		movement.processIntersections()
 
+
 		if (movement.intersections.size > 0 && movement.originalDelta > 0.1.mm) movement.retry()
 
 		movement.processRotation()
+
+//		System.out.printf("moved %.1fmm and %.1fmm and expected %.1f and %.1f\n",
+//			(entity.wipPosition.x - entity.position.x).toDouble(DistanceUnit.MILLIMETER),
+//			(entity.wipPosition.y - entity.position.y).toDouble(DistanceUnit.MILLIMETER),
+//			(entity.velocity.x * STEP_DURATION).toDouble(DistanceUnit.MILLIMETER),
+//			(entity.velocity.y * STEP_DURATION).toDouble(DistanceUnit.MILLIMETER)
+//		)
+		val oldVelocity = entity.velocity.x
+		val newVelocity = entity.wipVelocity.x
+
+		//println("velocity is ${entity.velocity} and acceleration is ${(newVelocity - oldVelocity) / STEP_DURATION}")
 		movement.finish()
 	}
 
