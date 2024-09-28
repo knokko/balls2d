@@ -173,6 +173,7 @@ class Scene {
 
 	private fun updateEntity(entity: Entity) {
 		movement.start(entity)
+		println("started update with speed ${entity.wipVelocity.length()}")
 
 		movement.determineInterestingTilesAndEntities()
 		movement.determineTileIntersections()
@@ -197,6 +198,7 @@ class Scene {
 
 		//println("velocity is ${entity.velocity} and acceleration is ${(newVelocity - oldVelocity) / STEP_DURATION}")
 		movement.finish()
+		println()
 	}
 
 	private fun updateEntities() {

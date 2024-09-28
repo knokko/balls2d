@@ -1,0 +1,78 @@
+started update
+alignment is -0.07521106646724006 and #intersections is 1 and #interesting tiles is 15
+normal is (0.69, 0.73) because my position is (0.14883, -0.00739) and other position is (0.080, -0.080)
+retry
+
+
+started update
+determineTileIntersections...
+hit LineSegment(0.08000m, -0.08000m, 0.01000m, -0.01000m) because position is (14771, -615) and delta is (1134, -1249)
+hit LineSegment(0.09000m, -0.09000m, 0.01000m, -0.01000m) because position is (14771, -615) and delta is (1134, -1249)
+intersection delta of 0.08000m, -0.08000m is 0.00167m and has? false
+added proper intersection
+intersection delta of 0.09000m, -0.09000m is 0.00954m and has? false
+alignment is -0.07521106646724006 and #intersections is 1 and #interesting tiles is 15
+normal is (0.69, 0.73) because my position is (0.14883, -0.00739) and other position is (0.080, -0.080)
+retry
+determineTileIntersections...
+determineTileIntersections...
+
+
+
+
+started update
+determineTileIntersections...
+missed LineSegment(0.06000m, -0.06000m, 0.01000m, -0.01000m) dirty because position is (14771, -615) and delta is (1134, -1249)
+missed LineSegment(0.07000m, -0.07000m, 0.01000m, -0.01000m) dirty because position is (14771, -615) and delta is (1134, -1249)
+hit LineSegment(0.08000m, -0.08000m, 0.01000m, -0.01000m) because position is (14771, -615) and delta is (1134, -1249)
+hit LineSegment(0.09000m, -0.09000m, 0.01000m, -0.01000m) because position is (14771, -615) and delta is (1134, -1249)
+missed LineSegment(0.10000m, -0.10000m, 0.01000m, -0.01000m) dirty because position is (14771, -615) and delta is (1134, -1249)
+there are 3 dirty tiles
+missed LineSegment(0.06000m, -0.06000m, 0.01000m, -0.01000m) dirty because position is (14771, -615) and delta is (112, -124)
+missed LineSegment(0.07000m, -0.07000m, 0.01000m, -0.01000m) dirty because position is (14771, -615) and delta is (112, -124)
+intersection delta of 0.08000m, -0.08000m is 0.00167m and has? false
+added proper intersection
+intersection delta of 0.09000m, -0.09000m is 0.00954m and has? false
+alignment is -0.07521106646724006 and #intersections is 1 and #interesting tiles is 15
+normal is (0.69, 0.73) because my position is (0.14883, -0.00739) and other position is (0.080, -0.080)
+retry
+determineTileIntersections...
+missed LineSegment(0.06000m, -0.06000m, 0.01000m, -0.01000m) dirty because position is (14883, -739) and delta is (1103, -1089)
+missed LineSegment(0.07000m, -0.07000m, 0.01000m, -0.01000m) dirty because position is (14883, -739) and delta is (1103, -1089)
+missed LineSegment(0.08000m, -0.08000m, 0.01000m, -0.01000m) dirty because position is (14883, -739) and delta is (1103, -1089)
+missed LineSegment(0.09000m, -0.09000m, 0.01000m, -0.01000m) dirty because position is (14883, -739) and delta is (1103, -1089)
+determineTileIntersections...
+missed LineSegment(0.07000m, -0.07000m, 0.01000m, -0.01000m) dirty because position is (15986, -1828) and delta is (-22, 22)
+missed LineSegment(0.08000m, -0.08000m, 0.01000m, -0.01000m) dirty because position is (15986, -1828) and delta is (-22, 22)
+missed LineSegment(0.09000m, -0.09000m, 0.01000m, -0.01000m) dirty because position is (15986, -1828) and delta is (-22, 22)
+
+
+
+
+started update
+determineTileIntersections...
+missed LineSegment(0.06000m, -0.06000m, 0.01000m, -0.01000m) dirty because position is (14771, -615) and delta is (1134, -1249)
+missed LineSegment(0.07000m, -0.07000m, 0.01000m, -0.01000m) dirty because position is (14771, -615) and delta is (1134, -1249)
+hit LineSegment(0.08000m, -0.08000m, 0.01000m, -0.01000m) because position is (14771, -615) and delta is (1134, -1249)
+hit distance is 0.10005m (0.06883m, 0.07261m)
+hit LineSegment(0.09000m, -0.09000m, 0.01000m, -0.01000m) because position is (14771, -615) and delta is (1134, -1249)
+hit distance is 0.10004m (0.06412m, 0.07679m)
+missed LineSegment(0.10000m, -0.10000m, 0.01000m, -0.01000m) dirty because position is (14771, -615) and delta is (1134, -1249)
+there are 3 dirty tiles
+missed LineSegment(0.06000m, -0.06000m, 0.01000m, -0.01000m) dirty because position is (14771, -615) and delta is (112, -124)
+missed LineSegment(0.07000m, -0.07000m, 0.01000m, -0.01000m) dirty because position is (14771, -615) and delta is (112, -124)
+intersection delta of 0.08000m, -0.08000m is 0.00167m and has? false
+added proper intersection
+intersection delta of 0.09000m, -0.09000m is 0.00954m and has? false
+alignment is -0.07521106646724006 and #intersections is 1 and #interesting tiles is 15
+normal is (0.69, 0.73) because my position is (0.14883, -0.00739) and other position is (0.080, -0.080)
+retry
+determineTileIntersections...
+missed LineSegment(0.06000m, -0.06000m, 0.01000m, -0.01000m) dirty because position is (14883, -739) and delta is (1103, -1089)
+missed LineSegment(0.07000m, -0.07000m, 0.01000m, -0.01000m) dirty because position is (14883, -739) and delta is (1103, -1089)
+missed LineSegment(0.08000m, -0.08000m, 0.01000m, -0.01000m) dirty because position is (14883, -739) and delta is (1103, -1089)
+missed LineSegment(0.09000m, -0.09000m, 0.01000m, -0.01000m) dirty because position is (14883, -739) and delta is (1103, -1089)
+determineTileIntersections...
+missed LineSegment(0.07000m, -0.07000m, 0.01000m, -0.01000m) dirty because position is (15986, -1828) and delta is (-22, 22)
+missed LineSegment(0.08000m, -0.08000m, 0.01000m, -0.01000m) dirty because position is (15986, -1828) and delta is (-22, 22)
+missed LineSegment(0.09000m, -0.09000m, 0.01000m, -0.01000m) dirty because position is (15986, -1828) and delta is (-22, 22)

@@ -1,0 +1,32 @@
+started update with speed 22.9751m/s
+determineTileIntersections...
+missed LineSegment(15.20000m, -15.20000m, 0.10000m, -0.10000m) dirty because position is (1535361, -1521212) and delta is (16197, -16344)
+hit LineSegment(15.30000m, -15.30000m, 0.10000m, -0.10000m) because position is (1535361, -1521212) and delta is (16197, -16344)
+hit distance is 0.10006m (0.06755m, 0.07382m)
+hit LineSegment(15.40000m, -15.40000m, 0.10000m, -0.10000m) because position is (1535361, -1521212) and delta is (16197, -16344)
+hit distance is 0.10007m (0.06179m, 0.07871m)
+there are 1 dirty tiles
+hit LineSegment(15.20000m, -15.20000m, 0.10000m, -0.10000m) because position is (1535361, -1521212) and delta is (1394, -1406)
+hit distance is 0.10004m (0.07074m, 0.07074m)
+there are 0 dirty tiles
+intersection delta of 15.30000m, -15.30000m is 0.01980m and has? false
+intersection delta of 15.40000m, -15.40000m is 0.15369m and has? false
+intersection delta of 15.28287m, -15.28286m is 0.00000m and has? false
+added proper intersection
+alignment is -0.004519212684333089 and #intersections is 1 and #interesting tiles is 8
+normal is (0.71, 0.71) because my position is (15.35361, -15.21212) and other position is (15.283, -15.283)
+retry
+determineTileIntersections...
+missed LineSegment(15.20000m, -15.20000m, 0.10000m, -0.10000m) dirty because position is (1535361, -1521212) and delta is (16261, -16310)
+hit LineSegment(15.30000m, -15.30000m, 0.10000m, -0.10000m) because position is (1535361, -1521212) and delta is (16261, -16310)
+hit distance is 0.10010m (0.06795m, 0.07350m)
+hit LineSegment(15.40000m, -15.40000m, 0.10000m, -0.10000m) because position is (1535361, -1521212) and delta is (16261, -16310)
+hit distance is 0.10008m (0.06540m, 0.07575m)
+there are 1 dirty tiles
+missed LineSegment(15.20000m, -15.20000m, 0.10000m, -0.10000m) dirty because position is (1535361, -1521212) and delta is (1434, -1438)
+intersection delta of 15.30000m, -15.30000m is 0.02031m and has? false
+added proper intersection
+intersection delta of 15.40000m, -15.40000m is 0.15834m and has? false
+alignment is -0.04074914657961033 and #intersections is 1 and #interesting tiles is 8
+normal is (0.68, 0.73) because my position is (15.36795, -15.22650) and other position is (15.300, -15.300)
+determineTileIntersections...
