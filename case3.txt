@@ -1,0 +1,36 @@
+started update with speed 0.0805m/s
+determineTileIntersections...
+hit LineSegment(-1.00000m, -0.95886m, 1.00000m, 0.95886m) because position is (-13375, 1043) and delta is (77, -73)
+hit distance is 0.10010m (-0.06928m, 0.07225m)
+hit LineSegment(-1.00000m, -0.95886m, 1.00000m, 0.95886m) because position is (-13375, 1043) and delta is (77, -73)
+hit distance is 0.10010m (-0.06928m, 0.07225m)
+there are 0 dirty tiles
+intersection delta of -0.06447m, -0.06182m is 0.00000m and has? false
+added proper intersection
+intersection delta of -0.06447m, -0.06182m is 0.00000m and has? false
+added proper intersection
+alignment is -1.000104318146917 and #intersections is 2 and #interesting tiles is 2
+normal is (-0.69, 0.72) because my position is (-0.13375, 0.01043) and other position is (-0.064, -0.062)
+alignment is -1.000104318146917 and #intersections is 2 and #interesting tiles is 2
+normal is (-0.69, 0.72) because my position is (-0.13375, 0.01043) and other position is (-0.064, -0.062)
+retry
+determineTileIntersections...
+hit LineSegment(-1.00000m, -0.95886m, 1.00000m, 0.95886m) because position is (-13375, 1043) and delta is (77, 25)
+hit distance is 0.10010m (-0.06928m, 0.07225m)
+hit LineSegment(-1.00000m, -0.95886m, 1.00000m, 0.95886m) because position is (-13375, 1043) and delta is (77, 25)
+hit distance is 0.10010m (-0.06928m, 0.07225m)
+there are 0 dirty tiles
+intersection delta of -0.06447m, -0.06182m is 0.00000m and has? true
+added proper intersection
+intersection delta of -0.06447m, -0.06182m is 0.00000m and has? true
+added proper intersection
+determineTileIntersections...
+hit LineSegment(-1.00000m, -0.95886m, 1.00000m, 0.95886m) because position is (-13451, 1122) and delta is (153, -54)
+hit distance is 0.10010m (-0.06928m, 0.07225m)
+hit LineSegment(-1.00000m, -0.95886m, 1.00000m, 0.95886m) because position is (-13451, 1122) and delta is (153, -54)
+hit distance is 0.10010m (-0.06928m, 0.07225m)
+there are 0 dirty tiles
+intersection delta of -0.06407m, -0.06144m is 0.00123m and has? true
+added proper intersection
+intersection delta of -0.06407m, -0.06144m is 0.00123m and has? true
+added proper intersection

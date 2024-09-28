@@ -33,8 +33,8 @@ private fun longSlopeScene(playerAttachment: EntityAttachment): Pair<Scene, UUID
 
 	val spawnPlayer = EntitySpawnRequest(x = 100.mm, y = 100.mm, radius = 100.mm, attachment = playerAttachment)
 	scene.spawnEntity(spawnPlayer)
-	val step = 1
-	for (raw in 0 until 100_000 step step) {
+	val step = 1000
+	for (raw in 0 until 1_000_000 step step) {
 		scene.addTile(
 			TilePlaceRequest(
 				collider = LineSegment(
@@ -57,7 +57,7 @@ private fun sinScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
 	val spawnPlayer = EntitySpawnRequest(x = -9.m, y = 2.5.m, radius = 100.mm, attachment = playerAttachment, velocityX = 0.mps)
 	scene.spawnEntity(spawnPlayer)
 
-	val step = 100
+	val step = 1500
 	for (rawX in -10_000 until 50_000 step step) {
 
 		fun computeY(x: Displacement) = 2 * sin((x / 2).toDouble(DistanceUnit.METER)).m
@@ -278,7 +278,7 @@ fun main() {
 	UpdateLoop({ renderLoop ->
 		if (!updateThread.isAlive) frame.dispose()
 		frame.repaint()
-		if (nanoTime() - startTime > 4e9) frame.dispose()
+		//if (nanoTime() - startTime > 4e9) frame.dispose()
 		if (!frame.isDisplayable) {
 			renderLoop.stop()
 			panel.profiler.stop()
