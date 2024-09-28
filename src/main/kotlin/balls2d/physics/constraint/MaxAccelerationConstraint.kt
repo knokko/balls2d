@@ -22,8 +22,9 @@ internal class MaxAccelerationConstraint(
 			val dx = state.vx - reference.x
 			val dy = state.vy - reference.y
 
-			state.vx = reference.x + max(-threshold, min(threshold, dx))
-			state.vy = reference.y + max(-threshold, min(threshold, dy))
+			// TODO Reconsider this class...
+//			state.vx = reference.x + max(-threshold, min(threshold, dx))
+//			state.vy = reference.y + max(-threshold, min(threshold, dy))
 		}
 
 		val currentVelocity = velocityHistory.claim()
