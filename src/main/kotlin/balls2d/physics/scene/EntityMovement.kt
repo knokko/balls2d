@@ -9,8 +9,11 @@ import balls2d.geometry.Position
 import balls2d.physics.Velocity
 import balls2d.physics.entity.Entity
 import balls2d.physics.entity.EntityClustering
+import java.lang.Math.pow
 import java.util.*
 import kotlin.math.*
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
 internal class EntityMovement(
@@ -36,9 +39,15 @@ internal class EntityMovement(
 	var originalDelta = 0.m
 	internal var remainingBudget = 1.0
 
+	private var oldIntersectionAge = 0.seconds
+	private var oldIntersectionNormalX = 0.0
+	private var oldIntersectionNormalY = 0.0
+	private var oldIntersectionNormalCounter = 0
+	private var oldIntersectionNormalFriction = 0.0
 	private var intersectionNormalX = 0.0
 	private var intersectionNormalY = 0.0
 	private var intersectionNormalCounter = 0
+	private var intersectionNormalFriction = 0.0
 	private var startX = 0.m
 	private var startY = 0.m
 
@@ -75,9 +84,17 @@ internal class EntityMovement(
 		deltaX = computeCurrentVelocityX() * Scene.STEP_DURATION
 		deltaY = computeCurrentVelocityY() * Scene.STEP_DURATION
 		originalDelta = sqrt(deltaX * deltaX + deltaY * deltaY)
+		if (intersectionNormalCounter > 0) {
+			oldIntersectionNormalX = intersectionNormalX
+			oldIntersectionNormalY = intersectionNormalY
+			oldIntersectionNormalCounter = intersectionNormalCounter
+			oldIntersectionNormalFriction = intersectionNormalFriction
+			oldIntersectionAge = 0.seconds
+		} else oldIntersectionAge += Scene.STEP_DURATION
 		intersectionNormalX = 0.0
 		intersectionNormalY = 0.0
 		intersectionNormalCounter = 0
+		intersectionNormalFriction = 0.0
 		startX = entity.wipPosition.x
 		startY = entity.wipPosition.y
 
@@ -137,7 +154,7 @@ internal class EntityMovement(
 			intersection.otherY = tileIntersection.y
 			val tx = entityIntersection.x - tileIntersection.x
 			val ty = entityIntersection.y - tileIntersection.y
-			println("hit distance is ${sqrt(tx * tx + ty * ty)} ($tx, $ty)")
+			//println("hit distance is ${sqrt(tx * tx + ty * ty)} ($tx, $ty)")
 			intersection.radius = entity.radius
 			intersection.delta = sqrt(dx * dx + dy * dy)
 			intersection.bounce = tile.material.bounceFactor
@@ -154,7 +171,7 @@ internal class EntityMovement(
 
 		val currentInterestingTiles = ArrayList(interestingTiles)
 		val nextInterestingTiles = mutableListOf<Tile>()
-		println("determineTileIntersections...")
+		//println("determineTileIntersections...")
 		while (currentInterestingTiles.isNotEmpty()) {
 			val oldSmallDeltaSquared = smallDeltaSquared
 			val currentDeltaX = smallDeltaX
@@ -173,9 +190,9 @@ internal class EntityMovement(
 						smallDeltaY = newDeltaY
 						smallDeltaSquared = newDeltaSquared
 					}
-					println("hit ${tile.collider} because position is (${entity.wipPosition.x.value.raw}, ${entity.wipPosition.y.value.raw}) and delta is (${currentDeltaX.value.raw}, ${currentDeltaY.value.raw})")
+					//println("hit ${tile.collider} because position is (${entity.wipPosition.x.value.raw}, ${entity.wipPosition.y.value.raw}) and delta is (${currentDeltaX.value.raw}, ${currentDeltaY.value.raw})")
 					addHit(tile)
-				} else if (sweepResult == Geometry.SWEEP_RESULT_DIRTY) println("missed ${tile.collider} dirty because position is (${entity.wipPosition.x.value.raw}, ${entity.wipPosition.y.value.raw}) and delta is (${currentDeltaX.value.raw}, ${currentDeltaY.value.raw})")
+				}// else if (sweepResult == Geometry.SWEEP_RESULT_DIRTY) println("missed ${tile.collider} dirty because position is (${entity.wipPosition.x.value.raw}, ${entity.wipPosition.y.value.raw}) and delta is (${currentDeltaX.value.raw}, ${currentDeltaY.value.raw})")
 				if (sweepResult == Geometry.SWEEP_RESULT_DIRTY) nextInterestingTiles.add(tile)
 			}
 
@@ -183,7 +200,7 @@ internal class EntityMovement(
 
 			currentInterestingTiles.clear()
 			currentInterestingTiles.addAll(nextInterestingTiles)
-			println("there are ${nextInterestingTiles.size} dirty tiles")
+			//println("there are ${nextInterestingTiles.size} dirty tiles")
 			nextInterestingTiles.clear()
 		}
 	}
@@ -307,10 +324,10 @@ internal class EntityMovement(
 
 		for (index in 0 until intersections.size) {
 			val intersection = intersections[index]
-			println("intersection delta of ${intersection.otherX}, ${intersection.otherY} is ${intersection.delta} and has? ${processedIntersections.contains(intersection.otherID)}")
+			//println("intersection delta of ${intersection.otherX}, ${intersection.otherY} is ${intersection.delta} and has? ${processedIntersections.contains(intersection.otherID)}")
 			// TODO Check what happens when I get rid of the processedIntersections check
 			if (intersection.delta <= firstIntersection.delta + 0.1.mm/* && !processedIntersections.contains(intersection.otherID)*/) {
-				println("added proper intersection")
+				//println("added proper intersection")
 				properIntersections.add(intersection)
 			}
 		}
@@ -334,25 +351,52 @@ internal class EntityMovement(
 	fun processRotation() {
 		entity.angle += entity.spin * Scene.STEP_DURATION
 
-		if (intersectionNormalCounter == 0) return
+		var usedOldNormals = false
+		if (intersectionNormalCounter == 0) {
+			if (oldIntersectionNormalCounter == 0 || oldIntersectionAge > 100.milliseconds) return
+
+			intersectionNormalCounter = oldIntersectionNormalCounter
+			intersectionNormalFriction = oldIntersectionNormalFriction
+			intersectionNormalX = oldIntersectionNormalX
+			intersectionNormalY = oldIntersectionNormalY
+			usedOldNormals = true
+		}
 
 		val normalX = intersectionNormalX / intersectionNormalCounter
 		val normalY = intersectionNormalY / intersectionNormalCounter
 		val dx = entity.wipPosition.x - startX
 		val dy = entity.wipPosition.y - startY
 		val rolledDistance = -normalY * dx + normalX * dy
+		val rolledSpeed = rolledDistance / Scene.STEP_DURATION
 
-		val expectedSpin = (rolledDistance / entity.radius / Scene.STEP_DURATION.toDouble(DurationUnit.SECONDS)).radps
+		//val expectedSpin = (rolledDistance / entity.radius / Scene.STEP_DURATION.toDouble(DurationUnit.SECONDS)).radps
+		val expectedSpin = rolledSpeed.toSpin(entity.radius)
 		var deltaSpin = expectedSpin - entity.spin
 
+		// TODO Use angular acceleration here
 		val maxDeltaSpin = 4000.degps * Scene.STEP_DURATION.toDouble(DurationUnit.SECONDS)
 		if (abs(deltaSpin) > maxDeltaSpin) deltaSpin = maxDeltaSpin * deltaSpin.value.sign
+		println("deltaSpin is $deltaSpin and max is $maxDeltaSpin and expected spin is $expectedSpin and actual spin is ${entity.spin}")
 
 		val consumedVelocity = computeEquivalentSpeed(deltaSpin)
 
 		entity.spin += deltaSpin
 		entity.wipVelocity.x += normalY * consumedVelocity
 		entity.wipVelocity.y -= normalX * consumedVelocity
+
+		val frictionCoefficient = entity.material.frictionFactor * intersectionNormalFriction / intersectionNormalCounter
+		val frictionDirectionFactor = abs(normalY * entity.wipVelocity.x - normalX * entity.wipVelocity.y) / entity.wipVelocity.length()
+		val frictionPerSecond = 0.3 * frictionCoefficient * frictionDirectionFactor
+		val frictionPerTick = 1 - (1 - frictionPerSecond).pow(Scene.STEP_DURATION.toDouble(DurationUnit.SECONDS))
+		entity.wipVelocity.x *= 1.0 - frictionPerTick
+		entity.wipVelocity.y *= 1.0 - frictionPerTick
+
+		if (usedOldNormals) {
+			intersectionNormalCounter = 0
+			intersectionNormalFriction = 0.0
+			intersectionNormalX = 0.0
+			intersectionNormalY = 0.0
+		}
 	}
 
 	private fun determineIntersectionFactor(intersection: Intersection, directionX: Double, directionY: Double): Double {
@@ -384,13 +428,15 @@ internal class EntityMovement(
 		intersectionNormalX += normalX
 		intersectionNormalY += normalY
 		intersectionNormalCounter += 1
+		intersectionNormalFriction += intersection.friction
 
 		val intersectionFactor = determineIntersectionFactor(
 				normalX, normalY, directionX, directionY
 		) / totalIntersectionFactor
 
 		val bounceConstant = entity.material.bounceFactor + intersection.bounce + 1
-		val frictionConstant = 0.001 * entity.material.frictionFactor * intersection.friction
+
+
 
 		var otherVelocityX = 0.mps
 		var otherVelocityY = 0.mps
@@ -404,11 +450,13 @@ internal class EntityMovement(
 		val relativeVelocityY = oldVelocityY - otherVelocityY
 
 		val velocityLength = sqrt(oldVelocityX * oldVelocityX + oldVelocityY * oldVelocityY)
-		println("alignment is ${(normalX * oldVelocityX + normalY * oldVelocityY) / velocityLength} and #intersections is ${properIntersections.size} and #interesting tiles is ${interestingTiles.size}")
+		println("alignment is ${(normalX * oldVelocityX + normalY * oldVelocityY) / velocityLength} and #intersections is ${properIntersections.size} and #interesting tiles is ${interestingTiles.size} and y is ${2.m + entity.wipPosition.y}")
 		System.out.printf("normal is (%.2f, %.2f) because my position is (%.5f, %.5f) and other position is (%.3f, %.3f)\n", normalX, normalY, intersection.myX.toDouble(DistanceUnit.METER), intersection.myY.toDouble(DistanceUnit.METER), intersection.otherX.toDouble(DistanceUnit.METER), intersection.otherY.toDouble(DistanceUnit.METER))
 		val forwardFactor = normalY * oldVelocityX - normalX * oldVelocityY
 		val opposingFactor = normalX * oldVelocityX + normalY * oldVelocityY
 		val opposingVelocity = bounceConstant * opposingFactor
+		// TODO Get rid of this hardcoded junk
+		val frictionConstant = 0.01
 		val frictionVelocity = frictionConstant * forwardFactor
 
 		val forceDirectionX = opposingVelocity * normalX + frictionVelocity * normalY
@@ -436,8 +484,9 @@ internal class EntityMovement(
 		val oldSpeed = sqrt(entity.wipVelocity.x * entity.wipVelocity.x + entity.wipVelocity.y * entity.wipVelocity.y)
 //		entity.wipVelocity.x -= impulseX / entity.mass
 //		entity.wipVelocity.y -= impulseY / entity.mass
-		entity.wipVelocity.x += intersectionFactor * (1 - frictionConstant) * normalY * forwardFactor
-		entity.wipVelocity.y -= intersectionFactor * (1 - frictionConstant) * normalX * forwardFactor
+		entity.wipVelocity.x += intersectionFactor * normalY * forwardFactor
+		entity.wipVelocity.y -= intersectionFactor * normalX * forwardFactor
+		println("changed velocity to ${entity.wipVelocity}")
 		//println("new alignment is ${(normalX * entity.wipVelocity.x + normalY * entity.wipVelocity.y) / entity.wipVelocity.length()} and #intersections is ${properIntersections.size} and #interesting tiles is ${interestingTiles.size}")
 //		val newSpeed = sqrt(entity.wipVelocity.x * entity.wipVelocity.x + entity.wipVelocity.y * entity.wipVelocity.y)
 //		val lostSpeed = oldSpeed - newSpeed
@@ -446,7 +495,7 @@ internal class EntityMovement(
 	}
 
 	fun retry() {
-		println("retry")
+		//println("retry")
 		updateRetryBudget()
 		retryStep()
 
@@ -501,6 +550,8 @@ internal class EntityMovement(
 		interestingTiles.clear()
 		interestingEntities.clear()
 
+		println("finish: wipVelocity was ${entity.wipVelocity}")
 		entity.wipVelocity.y -= 9.8.mps2 * Scene.STEP_DURATION
+		println("finish: changed wipVelocity to ${entity.wipVelocity}")
 	}
 }
