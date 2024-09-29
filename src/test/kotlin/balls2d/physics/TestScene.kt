@@ -152,6 +152,39 @@ class TestScene {
 	}
 
 	@Test
+	fun testConstraintsAllowBounce() {
+		// This scene tests that a falling ball can bounce high on a bouncy surface
+		val scene = Scene()
+		scene.addTile(TilePlaceRequest(
+			collider = LineSegment(startX = -1.m, startY = 0.m, lengthX = 2.m, lengthY = 0.m),
+			material = Material(1.kgpl, bounceFactor = 0.9f)
+		))
+		scene.spawnEntity(EntitySpawnRequest(
+			x = 0.m, y = 2.m, radius = 100.mm
+		))
+
+		var vyWasPositive = true
+		val peaks = mutableListOf<Displacement>()
+
+		val query = SceneQuery()
+		for (milliTime in 0 until 3000) {
+			scene.update(1.milliseconds)
+			scene.read(query, -1.m, -1.m, 1.m, 10.m)
+			assertEquals(1, query.entities.size)
+
+			val entity = query.entities[0]
+			val vyIsPositive = entity.velocity.y > 0.mps
+			if (vyWasPositive && !vyIsPositive) peaks.add(entity.position.y)
+			vyWasPositive = vyIsPositive
+		}
+
+		assertEquals(3, peaks.size)
+		assertEquals(2.m, peaks[0])
+		assertTrue(peaks[1] > 1.4.m, "Expected ${peaks[1]} to be at least 1.4m high")
+		assertTrue(peaks[2] > 1.m, "Expected ${peaks[2]} to be at least 1.0m high")
+	}
+
+	@Test
 	fun testNotMovingConstraint() {
 		// This scene is depicted in sketches/scene/not-moving.png. The balls should fall into this position within
 		// 20 seconds, after which they should stabilize. This test checks that their velocities stay nearly zero and

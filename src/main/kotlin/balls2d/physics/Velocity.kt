@@ -9,6 +9,8 @@ class Velocity(
 
 	override fun toString() = "V($x, $y)"
 
+	fun length() = sqrt(x * x + y * y)
+
 	companion object {
 
 		fun zero() = Velocity(0.mps, 0.mps)

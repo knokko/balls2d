@@ -5,7 +5,6 @@ import balls2d.geometry.Geometry
 import balls2d.geometry.LineSegment
 import balls2d.geometry.Position
 import balls2d.physics.Velocity
-import balls2d.physics.constraint.MaxAccelerationConstraint
 import balls2d.physics.constraint.NotMovingConstraint
 import balls2d.physics.entity.Entity
 import balls2d.physics.entity.EntityClustering
@@ -95,10 +94,6 @@ class Scene {
 						spin = request.spin,
 						attachment = request.attachment
 					)
-					entity.constraints.add(MaxAccelerationConstraint(
-							400.milliseconds,
-							5.mps
-					))
 					entity.constraints.add(NotMovingConstraint(200.milliseconds))
 					entities.add(entity)
 					request.id = entity.id

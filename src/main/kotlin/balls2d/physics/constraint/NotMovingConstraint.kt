@@ -1,10 +1,8 @@
 package balls2d.physics.constraint
 
-import balls2d.geometry.Position
-import balls2d.physics.Velocity
 import balls2d.physics.entity.UpdateParameters
 import balls2d.physics.scene.Scene
-import balls2d.physics.util.SlidingWindow
+import balls2d.physics.util.ExtremeSlidingWindow
 import fixie.*
 import kotlin.math.roundToInt
 import kotlin.time.Duration
@@ -14,44 +12,29 @@ internal class NotMovingConstraint(
 ) : VelocityConstraint() {
 
 	private val age = (windowDuration / Scene.STEP_DURATION).roundToInt()
-	private val velocityHistory = SlidingWindow(Array(age + 1) { Velocity.zero() })
-	private val positionHistory = SlidingWindow(Array(age + 1) { Position.origin() })
-
-	private var lowestSpeed = 100.mps
+	private val speedHistory = ExtremeSlidingWindow(Array(age + 1) { 0.mps })
+	private val xHistory = ExtremeSlidingWindow(Array(age + 1) { 0.m })
+	private val yHistory = ExtremeSlidingWindow(Array(age + 1) { 0.m })
 
 	override fun check(state: UpdateParameters) {
-		if (velocityHistory.getMaximumAge() >= age) {
-			val oldPosition = positionHistory.get(age)
+		val currentSpeed = sqrt(state.vx * state.vx + state.vy * state.vy)
+		if (speedHistory.getMaximumAge() >= age) {
 
-			val currentSpeed = abs(state.vx) + abs(state.vy)
-			val leavingSpeed = velocityHistory.get(velocityHistory.getMaximumAge()).x
-			velocityHistory.claim().x = currentSpeed
-			if (currentSpeed < lowestSpeed) lowestSpeed = currentSpeed
+			val dx = xHistory.getMaximumValue() - xHistory.getMinimumValue()
+			val dy = yHistory.getMaximumValue() - yHistory.getMinimumValue()
 
-			if (leavingSpeed == lowestSpeed) {
-				lowestSpeed = currentSpeed
-				for (candidateAge in 1..age) {
-					val candidateSpeed = velocityHistory.get(candidateAge).x
-					if (candidateSpeed < lowestSpeed) lowestSpeed = candidateSpeed
-				}
-			}
+			val actualDistance = sqrt(dx * dx + dy * dy)
+			val expectedDistance = speedHistory.getMinimumValue() * Scene.STEP_DURATION * age
 
-			val actualDistance = abs(state.x - oldPosition.x) + abs(state.y - oldPosition.y)
-			val expectedDistance = lowestSpeed * Scene.STEP_DURATION * age
-
-			if (expectedDistance > 2 * actualDistance && currentSpeed > 0.5.mps) {
+			if (expectedDistance > 2 * actualDistance + 1.mps * Scene.STEP_DURATION && currentSpeed > 0.5.mps) {
 				state.vx /= 2
 				state.vy /= 2
 				state.spin /= 2
 			}
 		}
 
-		val currentPosition = positionHistory.claim()
-		currentPosition.x = state.x
-		currentPosition.y = state.y
-
-		val currentVelocity = velocityHistory.claim()
-		currentVelocity.x = state.vx
-		currentVelocity.y = state.vy
+		speedHistory.insert(currentSpeed)
+		xHistory.insert(state.x)
+		yHistory.insert(state.y)
 	}
 }
