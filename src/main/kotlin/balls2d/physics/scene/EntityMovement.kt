@@ -303,8 +303,8 @@ internal class EntityMovement(
 		if (totalIntersectionFactor > 0.0) {
 			val oldVelocityX = computeCurrentVelocityX()
 			val oldVelocityY = computeCurrentVelocityY()
-			entity.wipVelocity.x = 0.mps
-			entity.wipVelocity.y = 0.mps
+//			entity.wipVelocity.x = 0.mps
+//			entity.wipVelocity.y = 0.mps
 			for (intersection in properIntersections) {
 				if (intersection.otherVelocity == null == processTiles) {
 					processIntersection(intersection, oldVelocityX, oldVelocityY, directionX, directionY, totalIntersectionFactor)
@@ -455,12 +455,9 @@ internal class EntityMovement(
 		val forwardFactor = normalY * oldVelocityX - normalX * oldVelocityY
 		val opposingFactor = normalX * oldVelocityX + normalY * oldVelocityY
 		val opposingVelocity = bounceConstant * opposingFactor
-		// TODO Get rid of this hardcoded junk
-		val frictionConstant = 0.01
-		val frictionVelocity = frictionConstant * forwardFactor
 
-		val forceDirectionX = opposingVelocity * normalX + frictionVelocity * normalY
-		val forceDirectionY = opposingVelocity * normalY - frictionVelocity * normalX
+		val forceDirectionX = opposingVelocity * normalX
+		val forceDirectionY = opposingVelocity * normalY
 		var impulseX = entity.mass * intersectionFactor * forceDirectionX
 		var impulseY = entity.mass * intersectionFactor * forceDirectionY
 
@@ -482,10 +479,10 @@ internal class EntityMovement(
 		}
 
 		val oldSpeed = sqrt(entity.wipVelocity.x * entity.wipVelocity.x + entity.wipVelocity.y * entity.wipVelocity.y)
-//		entity.wipVelocity.x -= impulseX / entity.mass
-//		entity.wipVelocity.y -= impulseY / entity.mass
-		entity.wipVelocity.x += intersectionFactor * normalY * forwardFactor
-		entity.wipVelocity.y -= intersectionFactor * normalX * forwardFactor
+		entity.wipVelocity.x -= impulseX / entity.mass
+		entity.wipVelocity.y -= impulseY / entity.mass
+//		entity.wipVelocity.x += intersectionFactor * normalY * forwardFactor
+//		entity.wipVelocity.y -= intersectionFactor * normalX * forwardFactor
 		println("changed velocity to ${entity.wipVelocity}")
 		//println("new alignment is ${(normalX * entity.wipVelocity.x + normalY * entity.wipVelocity.y) / entity.wipVelocity.length()} and #intersections is ${properIntersections.size} and #interesting tiles is ${interestingTiles.size}")
 //		val newSpeed = sqrt(entity.wipVelocity.x * entity.wipVelocity.x + entity.wipVelocity.y * entity.wipVelocity.y)
