@@ -12,18 +12,22 @@ object Geometry {
 			line.lengthX, line.lengthY, outCirclePosition, outPointOnLine
 	)
 
+	const val SWEEP_RESULT_MISS = 0
+	const val SWEEP_RESULT_DIRTY = 1
+	const val SWEEP_RESULT_HIT = 2
+
 	fun sweepCircleToLineSegment(
 		cx: Displacement, cy: Displacement, cvx: Displacement, cvy: Displacement, cr: Displacement,
 		lsx: Displacement, lsy: Displacement, lslx: Displacement, lsly: Displacement,
 		outCirclePosition: Position, outPointOnLine: Position
-	): Boolean {
+	): Int {
 		val fullDistance = distanceBetweenLineSegments(
 				cx, cy, cvx, cvy, outCirclePosition,
 				lsx, lsy, lslx, lsly, outPointOnLine
 		)
 
 		// When the line segment distance is larger than the radius, there is no collision
-		if (fullDistance > cr + 1.mm) return false
+		if (fullDistance > cr + 1.mm) return SWEEP_RESULT_MISS
 
 		val totalMovement = sqrt(cvx * cvx + cvy * cvy)
 
@@ -36,7 +40,7 @@ object Geometry {
 		val idealDistance = distanceBetweenPointAndLineSegment(cx + cvx, cy + cvy, lsx, lsy, lslx, lsly, outPointOnLine)
 
 		// Dirty trick
-		if (idealDistance > cr && fullDistance > 0.99 * cr) return false
+		if (idealDistance > cr && fullDistance > cr - 0.1.mm) return SWEEP_RESULT_DIRTY
 
 		var useBinarySearch = false
 		var signumCounter = 0
@@ -98,7 +102,7 @@ object Geometry {
 		outCirclePosition.x = newX
 		outCirclePosition.y = newY
 		distanceBetweenPointAndLineSegment(newX, newY, lsx, lsy, lslx, lsly, outPointOnLine)
-		return true
+		return SWEEP_RESULT_HIT
 	}
 
 	fun sweepCircleToCircle(

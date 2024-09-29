@@ -122,28 +122,58 @@ internal class EntityMovement(
 	}
 
 	fun determineTileIntersections() {
-		for (tile in interestingTiles) {
-			if (Geometry.sweepCircleToLineSegment(
-							entity.wipPosition.x, entity.wipPosition.y, deltaX, deltaY, entity.radius,
-							tile.collider, entityIntersection, tileIntersection
-					)) {
-				val dx = entityIntersection.x - entity.wipPosition.x
-				val dy = entityIntersection.y - entity.wipPosition.y
+		var smallDeltaX = deltaX
+		var smallDeltaY = deltaY
+		var smallDeltaSquared = smallDeltaX * smallDeltaX + smallDeltaY * smallDeltaY
 
-				val intersection = intersections.add()
-				intersection.myX = entityIntersection.x
-				intersection.myY = entityIntersection.y
-				intersection.otherX = tileIntersection.x
-				intersection.otherY = tileIntersection.y
-				intersection.radius = entity.radius
-				intersection.delta = sqrt(dx * dx + dy * dy)
-				intersection.bounce = tile.material.bounceFactor
-				intersection.friction = tile.material.frictionFactor
-				intersection.otherVelocity = null
-				intersection.otherID = tile.id
+		val currentInterestingTiles = ArrayList(interestingTiles)
+		val nextInterestingTiles = mutableListOf<Tile>()
 
-				intersection.validate()
+		while (currentInterestingTiles.isNotEmpty()) {
+			val oldSmallDeltaSquared = smallDeltaSquared
+			val currentDeltaX = smallDeltaX
+			val currentDeltaY = smallDeltaY
+
+			for (tile in currentInterestingTiles) {
+				val sweepResult = Geometry.sweepCircleToLineSegment(
+					entity.wipPosition.x, entity.wipPosition.y, currentDeltaX, currentDeltaY, entity.radius,
+					tile.collider, entityIntersection, tileIntersection
+				)
+
+				if (sweepResult == Geometry.SWEEP_RESULT_HIT) {
+					val newDeltaX = entityIntersection.x - entity.wipPosition.x
+					val newDeltaY = entityIntersection.y - entity.wipPosition.y
+					val newDeltaSquared = newDeltaX * newDeltaX + newDeltaY * newDeltaY
+					if (newDeltaSquared < smallDeltaSquared) {
+						smallDeltaX = newDeltaX
+						smallDeltaY = newDeltaY
+						smallDeltaSquared = newDeltaSquared
+					}
+
+					val dx = entityIntersection.x - entity.wipPosition.x
+					val dy = entityIntersection.y - entity.wipPosition.y
+
+					val intersection = intersections.add()
+					intersection.myX = entityIntersection.x
+					intersection.myY = entityIntersection.y
+					intersection.otherX = tileIntersection.x
+					intersection.otherY = tileIntersection.y
+					intersection.radius = entity.radius
+					intersection.delta = sqrt(dx * dx + dy * dy)
+					intersection.bounce = tile.material.bounceFactor
+					intersection.friction = tile.material.frictionFactor
+					intersection.otherVelocity = null
+					intersection.otherID = tile.id
+
+					intersection.validate()
+				}
+				if (sweepResult == Geometry.SWEEP_RESULT_DIRTY) nextInterestingTiles.add(tile)
 			}
+
+			if (smallDeltaSquared == oldSmallDeltaSquared) break
+			currentInterestingTiles.clear()
+			currentInterestingTiles.addAll(nextInterestingTiles)
+			nextInterestingTiles.clear()
 		}
 	}
 

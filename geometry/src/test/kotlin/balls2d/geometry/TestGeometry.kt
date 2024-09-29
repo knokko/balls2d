@@ -2,6 +2,7 @@ package balls2d.geometry
 
 import fixie.*
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -223,7 +224,7 @@ class TestGeometry {
 	fun testSweepCircleToLineSegmentRegression() {
 		val circlePosition = Position.origin()
 		val pointOnLine = Position.origin()
-		assertTrue(Geometry.sweepCircleToLineSegment(
+		assertEquals(Geometry.SWEEP_RESULT_HIT, Geometry.sweepCircleToLineSegment(
 				Displacement.raw(693953), Displacement.raw(11506),
 				Displacement.raw(23874), Displacement.raw(288),
 				Displacement.raw(4600),
@@ -238,7 +239,7 @@ class TestGeometry {
 		val pointY = 1.27852.m
 		val deltaX = -1.43524.m
 		val deltaY = 2.18087.m
-		assertTrue(Geometry.sweepCircleToLineSegment(
+		assertEquals(Geometry.SWEEP_RESULT_HIT, Geometry.sweepCircleToLineSegment(
 				pointX, pointY, deltaX, deltaY, 0.02.m,
 				-65.174.m, -25.146.m, 78.468.m, 39.172.m,
 				circlePosition, pointOnLine
