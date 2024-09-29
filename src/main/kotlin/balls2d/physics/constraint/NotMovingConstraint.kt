@@ -26,7 +26,7 @@ internal class NotMovingConstraint(
 			val actualDistance = sqrt(dx * dx + dy * dy)
 			val expectedDistance = speedHistory.getMinimumValue() * Scene.STEP_DURATION * age
 
-			if (expectedDistance > 2 * actualDistance + 1.mps * Scene.STEP_DURATION && currentSpeed > 0.5.mps) {
+			if (expectedDistance > max(2 * actualDistance, 2.mps * Scene.STEP_DURATION) && currentSpeed > 0.5.mps) {
 				state.vx /= 2
 				state.vy /= 2
 				state.spin /= 2

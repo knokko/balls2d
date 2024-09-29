@@ -106,6 +106,12 @@ private fun simpleSplitScene(playerAttachment: EntityAttachment): Pair<Scene, UU
 	scene.addTile(TilePlaceRequest(LineSegment(
 			startX = length, startY = 0.m, lengthX = -length, lengthY = -length
 	)))
+	scene.addTile(TilePlaceRequest(LineSegment(
+		startX = -length, startY = 0.m, lengthX = length, lengthY = length
+	)))
+	scene.addTile(TilePlaceRequest(LineSegment(
+		startX = length, startY = 0.m, lengthX = -length, lengthY = length
+	)))
 
 	for (counter in -5 .. 5) {
 		scene.spawnEntity(EntitySpawnRequest(

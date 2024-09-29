@@ -199,6 +199,12 @@ class TestScene {
 		scene.addTile(TilePlaceRequest(LineSegment(
 				startX = length, startY = 0.m, lengthX = -length, lengthY = -length
 		)))
+		scene.addTile(TilePlaceRequest(LineSegment(
+			startX = -length, startY = 0.m, lengthX = length, lengthY = length
+		)))
+		scene.addTile(TilePlaceRequest(LineSegment(
+			startX = length, startY = 0.m, lengthX = -length, lengthY = length
+		)))
 
 		for (counter in -5..5) {
 			scene.spawnEntity(EntitySpawnRequest(x = counter.m, y = 0.m, radius = 200.mm))
@@ -217,11 +223,9 @@ class TestScene {
 
 			for (index in 0 until query.entities.size) {
 				val entity = query.entities[index]
-				val threshold = 2.mps
-				assertTrue(
-						abs(entity.velocity.x) < threshold && abs(entity.velocity.y) < threshold,
-						"The velocity components ${entity.velocity} can be at most $threshold"
-				)
+				val maxSpeed = 2.5.mps
+				val speed = entity.velocity.length()
+				assertTrue(speed < maxSpeed, "The speed $speed can be at most $maxSpeed")
 				val stablePosition = stablePositions[index]
 				if (stablePosition == Position.origin()) {
 					stablePosition.x = entity.position.x
@@ -229,7 +233,8 @@ class TestScene {
 				}
 
 				val distance = stablePosition.distance(entity.position)
-				assertTrue(distance < 50.mm, "Distance $distance to stable position can be at most 50mm")
+				val maxDistance = 50.mm
+				assertTrue(distance < maxDistance, "Distance $distance to stable position can be at most $maxDistance")
 			}
 
 			scene.update(Scene.STEP_DURATION)
