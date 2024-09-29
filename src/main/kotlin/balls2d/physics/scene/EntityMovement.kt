@@ -9,6 +9,7 @@ import balls2d.geometry.Position
 import balls2d.physics.Velocity
 import balls2d.physics.entity.Entity
 import balls2d.physics.entity.EntityClustering
+import balls2d.physics.entity.Normal
 import java.util.*
 import kotlin.math.*
 import kotlin.time.DurationUnit
@@ -36,9 +37,6 @@ internal class EntityMovement(
 	var originalDelta = 0.m
 	private var remainingBudget = 1.0
 
-	private var intersectionNormalX = 0.0
-	private var intersectionNormalY = 0.0
-	private var intersectionNormalCounter = 0
 	private var startX = 0.m
 	private var startY = 0.m
 
@@ -72,12 +70,10 @@ internal class EntityMovement(
 
 	fun start(entity: Entity) {
 		this.entity = entity
+		entity.normalTracker.startTick()
 		deltaX = computeCurrentVelocityX() * Scene.STEP_DURATION
 		deltaY = computeCurrentVelocityY() * Scene.STEP_DURATION
 		originalDelta = sqrt(deltaX * deltaX + deltaY * deltaY)
-		intersectionNormalX = 0.0
-		intersectionNormalY = 0.0
-		intersectionNormalCounter = 0
 		startX = entity.wipPosition.x
 		startY = entity.wipPosition.y
 
@@ -286,13 +282,11 @@ internal class EntityMovement(
 	fun processRotation() {
 		entity.angle += entity.spin * Scene.STEP_DURATION
 
-		if (intersectionNormalCounter == 0) return
+		val normal = entity.normalTracker.get() ?: return
 
-		val normalX = intersectionNormalX / intersectionNormalCounter
-		val normalY = intersectionNormalY / intersectionNormalCounter
 		val dx = entity.wipPosition.x - startX
 		val dy = entity.wipPosition.y - startY
-		val rolledDistance = -normalY * dx + normalX * dy
+		val rolledDistance = -normal.y * dx + normal.x * dy
 
 		val expectedSpin = (rolledDistance / entity.radius / Scene.STEP_DURATION.toDouble(DurationUnit.SECONDS)).radps
 		var deltaSpin = expectedSpin - entity.spin
@@ -303,8 +297,15 @@ internal class EntityMovement(
 		val consumedVelocity = computeEquivalentSpeed(deltaSpin)
 
 		entity.spin += deltaSpin
-		entity.wipVelocity.x += normalY * consumedVelocity
-		entity.wipVelocity.y -= normalX * consumedVelocity
+		entity.wipVelocity.x += normal.y * consumedVelocity
+		entity.wipVelocity.y -= normal.x * consumedVelocity
+
+		val frictionCoefficient = entity.material.frictionFactor * normal.friction
+		val frictionDirectionFactor = abs(normal.y * entity.wipVelocity.x - normal.x * entity.wipVelocity.y) / entity.wipVelocity.length()
+		val frictionPerSecond = 0.3 * frictionCoefficient * frictionDirectionFactor
+		val frictionPerTick = 1 - (1 - frictionPerSecond).pow(Scene.STEP_DURATION.toDouble(DurationUnit.SECONDS))
+		entity.wipVelocity.x *= 1.0 - frictionPerTick
+		entity.wipVelocity.y *= 1.0 - frictionPerTick
 	}
 
 	private fun determineIntersectionFactor(intersection: Intersection, directionX: Double, directionY: Double): Double {
@@ -333,16 +334,12 @@ internal class EntityMovement(
 			throw RuntimeException("No no")
 		}
 
-		intersectionNormalX += normalX
-		intersectionNormalY += normalY
-		intersectionNormalCounter += 1
-
 		val intersectionFactor = determineIntersectionFactor(
 				normalX, normalY, directionX, directionY
 		) / totalIntersectionFactor
+		entity.normalTracker.registerIntersection(intersectionFactor, Normal(normalX, normalY, intersection.friction))
 
 		val bounceConstant = entity.material.bounceFactor + intersection.bounce + 1
-		val frictionConstant = 0.01 * entity.material.frictionFactor * intersection.friction
 
 		var otherVelocityX = 0.mps
 		var otherVelocityY = 0.mps
@@ -356,10 +353,9 @@ internal class EntityMovement(
 		val relativeVelocityY = oldVelocityY - otherVelocityY
 
 		val opposingVelocity = bounceConstant * (normalX * oldVelocityX + normalY * oldVelocityY)
-		val frictionVelocity = frictionConstant * (normalY * oldVelocityX - normalX * oldVelocityY)
 
-		val forceDirectionX = opposingVelocity * normalX + frictionVelocity * normalY
-		val forceDirectionY = opposingVelocity * normalY - frictionVelocity * normalX
+		val forceDirectionX = opposingVelocity * normalX
+		val forceDirectionY = opposingVelocity * normalY
 		var impulseX = entity.mass * intersectionFactor * forceDirectionX
 		var impulseY = entity.mass * intersectionFactor * forceDirectionY
 
@@ -436,5 +432,6 @@ internal class EntityMovement(
 		interestingEntities.clear()
 
 		entity.wipVelocity.y -= 9.8.mps2 * Scene.STEP_DURATION
+		entity.normalTracker.finishTick()
 	}
 }

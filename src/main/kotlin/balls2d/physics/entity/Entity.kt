@@ -20,6 +20,7 @@ class Entity(
 	val id: UUID = UUID.randomUUID()
 
 	internal val constraints = mutableListOf<VelocityConstraint>()
+	internal val normalTracker = NormalTracker()
 
 	internal val wipPosition = Position.origin()
 	internal val wipVelocity = Velocity.zero()
