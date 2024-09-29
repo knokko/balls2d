@@ -26,8 +26,45 @@ import javax.swing.WindowConstants.DISPOSE_ON_CLOSE
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.roundToInt
+import kotlin.math.sin
 import kotlin.random.Random
 import kotlin.time.Duration
+
+private fun longSlopeScene(playerAttachment: EntityAttachment, step: Int): Pair<Scene, UUID> {
+	val scene = Scene()
+	val spawnPlayer = EntitySpawnRequest(x = 100.mm, y = 100.mm, radius = 100.mm, attachment = playerAttachment)
+	scene.spawnEntity(spawnPlayer)
+	for (raw in 0 until 100_000 step step) {
+		scene.addTile(
+			TilePlaceRequest(
+				collider = LineSegment(
+					startX = raw.mm,
+					startY = -raw.mm,
+					lengthX = step.mm,
+					lengthY = -step.mm
+				)
+			)
+		)
+	}
+	scene.update(Duration.ZERO)
+	return Pair(scene, spawnPlayer.id!!)
+}
+
+private fun sinScene(playerAttachment: EntityAttachment, step: Int): Pair<Scene, UUID> {
+	val scene = Scene()
+	val spawnPlayer = EntitySpawnRequest(x = -9.m, y = 2.5.m, radius = 100.mm, attachment = playerAttachment, velocityX = 0.mps)
+	scene.spawnEntity(spawnPlayer)
+	for (rawX in -10_000 until 50_000 step step) {
+		fun computeY(x: Displacement) = 2 * sin((x / 2).toDouble(DistanceUnit.METER)).m
+		val x1 = rawX.mm
+		val x2 = (rawX + step).mm
+		val y1 = computeY(x1)
+		val y2 = computeY(x2)
+		scene.addTile(TilePlaceRequest(collider = LineSegment(startX = x1, startY = y1, lengthX = x2 - x1, lengthY = y2 - y1)))
+	}
+	scene.update(Duration.ZERO)
+	return Pair(scene, spawnPlayer.id!!)
+}
 
 private fun narrowPipesScene(playerAttachment: EntityAttachment): Pair<Scene, UUID> {
 	val scene = Scene()
