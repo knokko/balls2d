@@ -85,6 +85,7 @@ internal class EntityMovement(
 		deltaY = computeCurrentVelocityY() * Scene.STEP_DURATION
 		originalDelta = sqrt(deltaX * deltaX + deltaY * deltaY)
 		if (intersectionNormalCounter > 0) {
+			// TODO Wait... this trick won't work for multiple entities!
 			oldIntersectionNormalX = intersectionNormalX
 			oldIntersectionNormalY = intersectionNormalY
 			oldIntersectionNormalCounter = intersectionNormalCounter
