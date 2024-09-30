@@ -1,6 +1,8 @@
 package balls2d.geometry
 
 import fixie.*
+import kotlin.math.max
+import kotlin.math.min
 
 object Geometry {
 
@@ -356,10 +358,7 @@ object Geometry {
 			px: Displacement, py: Displacement, lx: Displacement, ly: Displacement,
 			ldx: Displacement, ldy: Displacement, outPointOnLine: Position
 	) {
-		var b = solveClosestPointOnLineToPoint(px, py, lx, ly, ldx, ldy)
-		if (b < 0.0) b = 0.0
-		if (b > 1.0) b = 1.0
-
+		val b = max(0.0, min(1.0, solveClosestPointOnLineToPoint(px, py, lx, ly, ldx, ldy)))
 		outPointOnLine.x = lx + b * ldx
 		outPointOnLine.y = ly + b * ldy
 	}
@@ -369,10 +368,6 @@ object Geometry {
 			ldx: Displacement, ldy: Displacement, outPointOnLine: Position
 	): Displacement {
 		findClosestPointOnLineSegmentToPoint(px, py, lx, ly, ldx, ldy, outPointOnLine)
-
-		val dx = outPointOnLine.x - px
-		val dy = outPointOnLine.y - py
-
-		return sqrt(dx * dx + dy * dy)
+		return outPointOnLine.distance(px, py)
 	}
 }
